@@ -904,6 +904,9 @@ public sealed class GameService : IDisposable
                 return;
 
             PlayerError = message;
+
+            // Se il brano non suona, il tempo di ascolto non deve scorrere a vuoto.
+            StopPlayingLocked();
         }
 
         Notify();

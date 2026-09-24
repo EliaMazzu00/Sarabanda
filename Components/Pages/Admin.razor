@@ -615,6 +615,11 @@
             $"Apri lo Schermo sulla TV (e cliccaci una volta, per l'audio), poi prepara la prima canzone. {Game.RemainingCount} da giocare.",
             "▶ Prepara la canzone", Game.StartNext),
 
+        GameStatus.Ready or GameStatus.Listening when Game.PlayerError is not null && !Game.IsPlaying => new(
+            "Questo brano non si riesce a suonare",
+            "Il file è danneggiato o in un formato che il browser non conosce. Passa alla prossima canzone (e controlla il file nella cartella canzoni).",
+            "⏭ Prossima canzone", Game.StartNext),
+
         GameStatus.Ready => new(
             $"Canzone n. {Game.SongNumber} pronta",
             "Sullo schermo c'è \"Pronti?\". Quando le squadre sono pronte, fai partire la musica: da lì possono prenotarsi.",

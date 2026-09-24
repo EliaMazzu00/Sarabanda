@@ -110,7 +110,7 @@
     });
 
     function waitForMetadata() {
-        if (el.readyState >= 1 && isFinite(el.duration)) {
+        if ((el.readyState >= 1 && isFinite(el.duration)) || el.error) {
             return Promise.resolve();
         }
         return new Promise((resolve) => {
@@ -162,6 +162,12 @@
         await waitForMetadata();
         if (lastCmd !== cmd) {
             return; // nel frattempo è arrivato un altro comando
+        }
+
+        if (el.error) {
+            report('OnPlayerError', cmd.seq,
+                'Il brano non si riesce a riprodurre: formato non supportato dal browser o file danneggiato.');
+            return;
         }
 
         const target = startOffset(cmd) + cmd.listened;
