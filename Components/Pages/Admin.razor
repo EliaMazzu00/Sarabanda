@@ -152,7 +152,8 @@
                         sullo schermo: il giudizio resta tuo.
                     </p>
 
-                    <div class="subhead">Da che punto parte un brano audio</div>
+                    <div class="subhead">Da che punto parte un tuo brano audio</div>
+                    <p class="hint top">I brani 🌐 del catalogo partono sempre dall'inizio della loro anteprima di 30 secondi.</p>
                     <div class="radios">
                         <label class="radio">
                             <input type="radio" name="start" checked="@(cfgStart == StartMode.Beginning)"
@@ -222,6 +223,8 @@
                         <label>Playlist</label>
                         <span class="themes-actions">
                             <button class="btn-mini" @onclick="SelectAll">tutte</button>
+                            <button class="btn-mini" title="Solo il catalogo online" @onclick="() => SelectKind(SongKind.Online)">🌐</button>
+                            <button class="btn-mini" title="Solo le melodie al pianoforte" @onclick="() => SelectKind(SongKind.Melody)">🎹</button>
                             <button class="btn-mini" @onclick="SelectNone">nessuna</button>
                         </span>
                     </div>
@@ -232,8 +235,8 @@
                             <label class="theme @(Game.SelectedPlaylists.Contains(playlist.Id) ? "on" : "")">
                                 <input type="checkbox" checked="@Game.SelectedPlaylists.Contains(playlist.Id)"
                                        @onchange="e => TogglePlaylist(playlist.Id, e)" />
-                                <span class="theme-kind" title="@(playlist.Kind == SongKind.Audio ? "Brani audio" : "Melodie al pianoforte")">
-                                    @(playlist.Kind == SongKind.Audio ? "🎵" : "🎹")
+                                <span class="theme-kind" title="@playlist.Kind.Describe()">
+                                    @playlist.Kind.Icon()
                                 </span>
                                 <span class="theme-name">@playlist.Name</span>
                                 <span class="theme-count">@playlist.Count</span>
@@ -241,13 +244,11 @@
                         }
                     </div>
 
-                    @if (!Game.Playlists.Any(p => p.Kind == SongKind.Audio))
-                    {
-                        <p class="hint notice">
-                            Nessun brano audio ancora: per ora si gioca con le <strong>melodie al pianoforte</strong> incluse.
-                            Per le canzoni vere caricale qui sotto o mettile nella cartella indicata.
-                        </p>
-                    }
+                    <ul class="legend">
+                        <li><strong>🌐 Catalogo online</strong>: @Game.Playlists.Where(p => p.Kind == SongKind.Online).Sum(p => p.Count) canzoni vere di tutti i generi, con l'anteprima ufficiale di 30 secondi. Serve Internet sul PC della regia (la TV no).</li>
+                        <li><strong>🎹 Melodie</strong>: al pianoforte, funzionano anche senza Internet.</li>
+                        <li><strong>🎵 I tuoi brani</strong>: i file che carichi qui sotto, suonati per intero.</li>
+                    </ul>
 
                     <div class="upload">
                         <div class="subhead">Aggiungi le tue canzoni</div>
@@ -301,7 +302,7 @@
                                 var song = Game.Loaded[index];
                                 <li class="@(Game.WasPlayed(index) ? "played" : "") @(index == Game.CurrentIndex && Game.IsActive ? "current" : "")">
                                     <button class="play-one" title="Prepara questa canzone" @onclick="() => Game.StartAt(index)">▶</button>
-                                    <span class="song-kind">@(song.Kind == SongKind.Audio ? "🎵" : "🎹")</span>
+                                    <span class="song-kind">@song.Kind.Icon()</span>
                                     <span class="song-title">@song.Title</span>
                                     <span class="song-artist">@song.Artist</span>
                                     @if (Game.WasPlayed(index))
@@ -344,13 +345,26 @@
                 <!-- ---- La canzone: titolo e comandi della musica ---- -->
                 <div class="now-card">
                     <div class="now-head">
-                        <span class="now-kind">@(current.Kind == SongKind.Audio ? "🎵 Brano audio" : "🎹 Melodia")</span>
+                        <span class="now-kind">@current.Kind.Icon() @(current.Kind switch { SongKind.Audio => "Brano audio", SongKind.Online => "Catalogo online", _ => "Melodia" })</span>
                         <span class="now-playlist">@current.Playlist</span>
                     </div>
                     <div class="now-title">@current.Title</div>
                     @if (current.Artist.Length > 0)
                     {
-                        <div class="now-artist">@current.Artist</div>
+                        <div class="now-artist">@current.Artist@(current.Year is { } year ? $" · {year}" : "")</div>
+                    }
+
+                    @if (current.Kind == SongKind.Online)
+                    {
+                        @switch (Game.PreviewState)
+                        {
+                            case PreviewState.Loading:
+                                <p class="preview-state loading">⏳ Cerco l'anteprima su Internet… Puoi già premere "Fai partire": la musica parte appena arriva.</p>
+                                break;
+                            case PreviewState.Ready when Game.CurrentPreview is { } preview:
+                                <p class="preview-state ready" title="Controlla che sia il brano giusto">🌐 Anteprima da @preview.Source: «@preview.FoundTitle» — @preview.FoundArtist</p>
+                                break;
+                        }
                     }
 
                     <div class="transport">
@@ -617,8 +631,15 @@
 
         GameStatus.Ready or GameStatus.Listening when Game.PlayerError is not null && !Game.IsPlaying => new(
             "Questo brano non si riesce a suonare",
-            "Il file è danneggiato o in un formato che il browser non conosce. Passa alla prossima canzone (e controlla il file nella cartella canzoni).",
+            Game.CurrentSong?.Kind == SongKind.Online
+                ? "L'anteprima non è disponibile (il motivo è scritto qui sotto). Passa alla prossima canzone."
+                : "Il file è danneggiato o in un formato che il browser non conosce. Passa alla prossima canzone (e controlla il file nella cartella canzoni).",
             "⏭ Prossima canzone", Game.StartNext),
+
+        GameStatus.Ready when Game.WaitingForPreview => new(
+            "Arriva la canzone…",
+            "Sto scaricando l'anteprima: la musica parte da sola appena è pronta (di solito un secondo).",
+            "", null),
 
         GameStatus.Ready => new(
             $"Canzone n. {Game.SongNumber} pronta",
@@ -748,6 +769,9 @@
     private void SelectAll() => Game.UsePlaylists(Game.Playlists.Select(p => p.Id));
 
     private void SelectNone() => Game.UsePlaylists(Array.Empty<string>());
+
+    private void SelectKind(SongKind kind) =>
+        Game.UsePlaylists(Game.Playlists.Where(p => p.Kind == kind).Select(p => p.Id));
 
     private void Reload()
     {

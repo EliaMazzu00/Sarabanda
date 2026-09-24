@@ -1,0 +1,44 @@
+# TEMA: Cantautori italiani
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+La canzone di Marinella | Fabrizio De André | 1964
+Bocca di rosa | Fabrizio De André | 1967
+Il pescatore | Fabrizio De André | 1970
+Rimmel | Francesco De Gregori | 1975
+La donna cannone | Francesco De Gregori | 1983
+Generale | Francesco De Gregori | 1978
+Caruso | Lucio Dalla | 1986
+L'anno che verrà | Lucio Dalla | 1979
+Piazza Grande | Lucio Dalla | 1972
+Attenti al lupo | Lucio Dalla | 1990
+Emozioni | Lucio Battisti | 1970
+La canzone del sole | Lucio Battisti | 1971
+I giardini di marzo | Lucio Battisti | 1972
+Il mio canto libero | Lucio Battisti | 1972
+Acqua azzurra, acqua chiara | Lucio Battisti | 1969
+La cura | Franco Battiato | 1996
+Centro di gravità permanente | Franco Battiato | 1981
+Voglio vederti danzare | Franco Battiato | 1982
+Notte prima degli esami | Antonello Venditti | 1984
+Roma capoccia | Antonello Venditti | 1972
+Questo piccolo grande amore | Claudio Baglioni | 1972
+Strada facendo | Claudio Baglioni | 1981
+Gianna | Rino Gaetano | 1978
+Ma il cielo è sempre più blu | Rino Gaetano | 1975
+La locomotiva | Francesco Guccini | 1972
+La costruzione di un amore | Ivano Fossati | 1978
+Via con me | Paolo Conte | 1981
+Senza fine | Gino Paoli | 1961
+Vedrai, vedrai | Luigi Tenco | 1965
+Quello che le donne non dicono | Fiorella Mannoia | 1987
+Samarcanda | Roberto Vecchioni | 1977
+Napule è | Pino Daniele | 1977
+Je so' pazzo | Pino Daniele | 1979
+Quando | Pino Daniele | 1991
+Giudizi universali | Samuele Bersani | 1997
+Salirò | Daniele Silvestri | 2002
+Costruire | Niccolò Fabi | 2006
+Confusa e felice | Carmen Consoli | 1997
+Una musica può fare | Max Gazzè | 1998
+Mare mare | Luca Carboni | 1992

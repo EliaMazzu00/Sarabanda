@@ -1,0 +1,31 @@
+# TEMA: Disco e funk
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+I Will Survive | Gloria Gaynor | 1978
+Stayin' Alive | Bee Gees | 1977
+Night Fever | Bee Gees | 1977
+I Feel Love | Donna Summer | 1977
+Hot Stuff | Donna Summer | 1979
+Le Freak | Chic | 1978
+Y.M.C.A. | Village People | 1978
+September | Earth, Wind & Fire | 1978
+Celebration | Kool & The Gang | 1980
+Get Down On It | Kool & The Gang | 1981
+We Are Family | Sister Sledge | 1979
+Rasputin | Boney M. | 1978
+Daddy Cool | Boney M. | 1976
+That's the Way (I Like It) | KC and the Sunshine Band | 1975
+I Want You Back | The Jackson 5 | 1969
+Don't Stop 'Til You Get Enough | Michael Jackson | 1979
+I Got You (I Feel Good) | James Brown | 1965
+Sir Duke | Stevie Wonder | 1976
+Upside Down | Diana Ross | 1980
+I'm Coming Out | Diana Ross | 1980
+Got to Be Real | Cheryl Lynn | 1978
+Ring My Bell | Anita Ward | 1979
+Disco Inferno | The Trammps | 1976
+Funkytown | Lipps Inc. | 1979
+Born to Be Alive | Patrick Hernandez | 1978
+Play That Funky Music | Wild Cherry | 1976
+I'm Every Woman | Chaka Khan | 1978

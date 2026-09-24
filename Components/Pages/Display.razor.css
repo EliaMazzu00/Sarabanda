@@ -365,3 +365,45 @@
     box-shadow: 0 0 30px color-mix(in srgb, var(--team) 60%, transparent);
     transform: translateY(-4px);
 }
+
+/* ---- Copertina dell'album (brani del catalogo online) ---- */
+.cover-wrap {
+    position: relative;
+    width: clamp(10rem, 40vmin, 26rem);
+    aspect-ratio: 1;
+    margin-right: clamp(2rem, 8vmin, 6rem);
+    animation: rise .6s cubic-bezier(.2, .9, .3, 1.1) both;
+}
+
+.cover {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--r-md);
+    object-fit: cover;
+    box-shadow: var(--sh-lg), 0 0 50px rgba(255, 63, 164, .3);
+}
+
+/* Il disco esce dalla copertina, come da una busta. */
+.vinyl.behind {
+    position: absolute;
+    top: 4%;
+    left: 30%;
+    width: 92%;
+    transition: left .8s cubic-bezier(.2, .9, .3, 1);
+}
+
+.cover-wrap.playing .vinyl.behind {
+    left: 45%;
+}
+
+.reveal-year {
+    color: var(--c-text-faint);
+    font-weight: 600;
+}
+
+.arriving {
+    color: var(--c-yellow);
+    animation: blink 1.2s ease-in-out infinite;
+}

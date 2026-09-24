@@ -1,0 +1,44 @@
+# TEMA: Sanremo, vincitori e canzoni storiche
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Nel blu dipinto di blu | Domenico Modugno | 1958
+Piove (Ciao ciao bambina) | Domenico Modugno | 1959
+Non ho l'età | Gigliola Cinquetti | 1964
+Una lacrima sul viso | Bobby Solo | 1964
+Il ragazzo della via Gluck | Adriano Celentano | 1966
+Canzone per te | Sergio Endrigo | 1968
+Il cuore è uno zingaro | Nicola Di Bari | 1971
+4/3/1943 | Lucio Dalla | 1971
+...E dirsi ciao | Matia Bazar | 1978
+Sarà perché ti amo | Ricchi e Poveri | 1981
+Se m'innamoro | Ricchi e Poveri | 1985
+Felicità | Al Bano & Romina Power | 1982
+Ci sarà | Al Bano & Romina Power | 1984
+L'italiano | Toto Cutugno | 1983
+Adesso tu | Eros Ramazzotti | 1986
+Almeno tu nell'universo | Mia Martini | 1989
+Ti lascerò | Anna Oxa | 1989
+Se stiamo insieme | Riccardo Cocciante | 1991
+Portami a ballare | Luca Barbarossa | 1992
+Mistero | Enrico Ruggeri | 1993
+La solitudine | Laura Pausini | 1993
+Come saprei | Giorgia | 1995
+Con te partirò | Andrea Bocelli | 1995
+Vorrei incontrarti fra cent'anni | Ron | 1996
+Sentimento | Avion Travel | 2000
+Ti regalerò una rosa | Simone Cristicchi | 2007
+La forza mia | Marco Carta | 2009
+Per tutte le volte che... | Valerio Scanu | 2010
+Chiamami ancora amore | Roberto Vecchioni | 2011
+L'essenziale | Marco Mengoni | 2013
+Controvento | Arisa | 2014
+Grande amore | Il Volo | 2015
+Un giorno mi dirai | Stadio | 2016
+Occidentali's Karma | Francesco Gabbani | 2017
+Non mi avete fatto niente | Ermal Meta | 2018
+Fai rumore | Diodato | 2020
+Brividi | Mahmood | 2022
+Due vite | Marco Mengoni | 2023
+La noia | Angelina Mango | 2024
+Balorda nostalgia | Olly | 2025

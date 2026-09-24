@@ -29,11 +29,19 @@ public sealed class Song
     /// <summary>Le note (solo per <see cref="SongKind.Melody"/>).</summary>
     public IReadOnlyList<Note> Notes { get; init; } = Array.Empty<Note>();
 
+    /// <summary>L'anno di uscita, se noto (brani del catalogo).</summary>
+    public int? Year { get; init; }
+
     /// <summary>Velocità della melodia, in battiti al minuto.</summary>
     public int Bpm { get; init; } = 100;
 
     /// <summary>Indirizzo da cui il browser scarica il brano audio.</summary>
-    public string Url => Kind == SongKind.Audio ? $"audio/{Id}" : "";
+    public string Url => Kind switch
+    {
+        SongKind.Audio => $"audio/{Id}",
+        SongKind.Online => $"audio/online/{Id}",
+        _ => ""
+    };
 
     /// <summary>Titolo e artista su una riga, per la regia.</summary>
     public string Label => Artist.Length > 0 ? $"{Title} — {Artist}" : Title;
@@ -52,3 +60,23 @@ public sealed class Song
 /// <param name="Kind">Se contiene file audio o melodie.</param>
 /// <param name="Count">Quanti brani contiene.</param>
 public readonly record struct PlaylistInfo(string Id, string Name, SongKind Kind, int Count);
+
+/// <summary>Icone e nomi dei tipi di brano, uguali in tutte le pagine.</summary>
+public static class SongKindText
+{
+    /// <summary>L'icona: 🎵 file audio, 🌐 catalogo online, 🎹 melodia.</summary>
+    public static string Icon(this SongKind kind) => kind switch
+    {
+        SongKind.Audio => "🎵",
+        SongKind.Online => "🌐",
+        _ => "🎹"
+    };
+
+    /// <summary>Il nome per esteso.</summary>
+    public static string Describe(this SongKind kind) => kind switch
+    {
+        SongKind.Audio => "Brani audio tuoi",
+        SongKind.Online => "Catalogo online: anteprime di 30 secondi, serve Internet sul PC della regia",
+        _ => "Melodie al pianoforte, funzionano senza Internet"
+    };
+}

@@ -1,0 +1,33 @@
+# TEMA: Rock italiano
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Albachiara | Vasco Rossi | 1979
+Vita spericolata | Vasco Rossi | 1983
+Siamo solo noi | Vasco Rossi | 1981
+Sally | Vasco Rossi | 1996
+Gli spari sopra | Vasco Rossi | 1993
+Certe notti | Ligabue | 1995
+Balliamo sul mondo | Ligabue | 1990
+Urlando contro il cielo | Ligabue | 1991
+El diablo | Litfiba | 1990
+Regina di cuori | Litfiba | 1997
+Bello e impossibile | Gianna Nannini | 1986
+America | Gianna Nannini | 1979
+Ho imparato a sognare | Negrita | 1997
+Quello che non c'è | Afterhours | 2002
+Tutti i miei sbagli | Subsonica | 2000
+Dedicato a te | Le Vibrazioni | 2003
+Mentre tutto scorre | Negramaro | 2005
+Zitti e buoni | Måneskin | 2021
+Beggin' | Måneskin | 2017
+I Wanna Be Your Slave | Måneskin | 2021
+Io vagabondo | Nomadi | 1972
+Impressioni di settembre | PFM | 1972
+L'isola che non c'è | Edoardo Bennato | 1980
+Il gatto e la volpe | Edoardo Bennato | 1977
+Diamante | Zucchero | 1989
+Senza una donna | Zucchero | 1987
+Così celeste | Zucchero | 1995
+La terra dei cachi | Elio e le Storie Tese | 1996
+Uomini soli | Pooh | 1990

@@ -1,0 +1,27 @@
+# TEMA: Colonne sonore e canzoni dei film
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+My Heart Will Go On | Céline Dion | 1997
+I Will Always Love You | Whitney Houston | 1992
+Eye of the Tiger | Survivor | 1982
+Flashdance... What a Feeling | Irene Cara | 1983
+Footloose | Kenny Loggins | 1984
+(I've Had) The Time of My Life | Bill Medley | 1987
+You're the One That I Want | John Travolta | 1978
+Ghostbusters | Ray Parker Jr. | 1984
+Take My Breath Away | Berlin | 1986
+Don't You (Forget About Me) | Simple Minds | 1985
+(Everything I Do) I Do It for You | Bryan Adams | 1991
+Let It Go | Idina Menzel | 2013
+Shallow | Lady Gaga | 2018
+Skyfall | Adele | 2012
+See You Again | Wiz Khalifa | 2015
+Can You Feel the Love Tonight | Elton John | 1994
+You'll Be in My Heart | Phil Collins | 1999
+Don't Worry Be Happy | Bobby McFerrin | 1988
+Up Where We Belong | Joe Cocker | 1982
+Goldfinger | Shirley Bassey | 1964
+What Was I Made For? | Billie Eilish | 2023
+Stuck in the Middle with You | Stealers Wheel | 1972
+Misirlou | Dick Dale | 1962

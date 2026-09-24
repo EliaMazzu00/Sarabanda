@@ -1,0 +1,35 @@
+# TEMA: Latino e reggaeton
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Despacito | Luis Fonsi | 2017
+Gasolina | Daddy Yankee | 2004
+La Tortura | Shakira | 2005
+Livin' la Vida Loca | Ricky Martin | 1999
+María | Ricky Martin | 1995
+Bailando | Enrique Iglesias | 2014
+Hero | Enrique Iglesias | 2001
+Macarena | Los del Río | 1993
+Mi Gente | J Balvin | 2017
+Tití Me Preguntó | Bad Bunny | 2022
+DtMF | Bad Bunny | 2025
+Dákiti | Bad Bunny | 2020
+Tusa | KAROL G | 2019
+DESPECHÁ | ROSALÍA | 2022
+Havana | Camila Cabello | 2017
+On the Floor | Jennifer Lopez | 2011
+Give Me Everything | Pitbull | 2011
+La Gozadera | Gente de Zona | 2015
+La Bicicleta | Carlos Vives | 2016
+Sofia | Álvaro Soler | 2016
+Lambada | Kaoma | 1989
+La Camisa Negra | Juanes | 2004
+Me gustas tú | Manu Chao | 2001
+Bamboléo | Gipsy Kings | 1987
+Volare | Gipsy Kings | 1989
+Smooth | Santana | 1999
+Oye como va | Santana | 1970
+X | Nicky Jam | 2018
+Felices los 4 | Maluma | 2017
+Vivir Mi Vida | Marc Anthony | 2013
+Ai Se Eu Te Pego | Michel Teló | 2011

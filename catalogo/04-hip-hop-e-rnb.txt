@@ -1,0 +1,41 @@
+# TEMA: Hip hop e R&B
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Lose Yourself | Eminem | 2002
+The Real Slim Shady | Eminem | 2000
+Without Me | Eminem | 2002
+In Da Club | 50 Cent | 2003
+Hey Ya! | Outkast | 2003
+Where Is the Love? | Black Eyed Peas | 2003
+Stronger | Kanye West | 2007
+Empire State of Mind | JAY-Z | 2009
+Fallin' | Alicia Keys | 2001
+Yeah! | Usher | 2004
+Hot in Herre | Nelly | 2002
+Hotline Bling | Drake | 2015
+God's Plan | Drake | 2018
+HUMBLE. | Kendrick Lamar | 2017
+Not Like Us | Kendrick Lamar | 2024
+Circles | Post Malone | 2019
+Sunflower | Post Malone | 2018
+SICKO MODE | Travis Scott | 2018
+Old Town Road | Lil Nas X | 2019
+Say So | Doja Cat | 2019
+I Like It | Cardi B | 2018
+Thrift Shop | Macklemore & Ryan Lewis | 2012
+Gangsta's Paradise | Coolio | 1995
+Still D.R.E. | Dr. Dre | 1999
+Drop It Like It's Hot | Snoop Dogg | 2004
+Juicy | The Notorious B.I.G. | 1994
+California Love | 2Pac | 1995
+Walk This Way | Run-DMC | 1986
+(You Gotta) Fight for Your Right (To Party!) | Beastie Boys | 1986
+U Can't Touch This | MC Hammer | 1990
+Ice Ice Baby | Vanilla Ice | 1990
+Killing Me Softly With His Song | Fugees | 1996
+Doo Wop (That Thing) | Lauryn Hill | 1998
+Survivor | Destiny's Child | 2001
+Single Ladies (Put a Ring on It) | Beyoncé | 2008
+Kill Bill | SZA | 2022
+Thinkin Bout You | Frank Ocean | 2012

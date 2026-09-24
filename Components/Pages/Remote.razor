@@ -73,7 +73,7 @@ else
                         <div class="reveal-title">@Game.CurrentSong?.Title</div>
                         @if (Game.CurrentSong is { Artist.Length: > 0 } song)
                         {
-                            <div class="reveal-artist">@song.Artist</div>
+                            <div class="reveal-artist">@song.Artist@(song.Year is { } year ? $" · {year}" : "")</div>
                         }
                         <div class="reveal-winner">
                             @(Game.Winner == team.Index ? "🎉 L'avete indovinata!" : Game.Winner is { } w ? $"L'ha indovinata {Game.Teams[w].Name}" : "Nessuno l'ha indovinata")

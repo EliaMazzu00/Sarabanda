@@ -5,12 +5,19 @@ la musica e mostra chi si è prenotato, **i telefoni delle squadre sono i pulsan
 prenotazione**. Tutto si aggiorna in tempo reale, senza installare niente sugli altri
 dispositivi.
 
-Si gioca con **le tue canzoni** (mp3, m4a, ogg, wav…) oppure, da subito, con le
-**30 melodie al pianoforte** già incluse: brani classici e tradizionali, suonati nota per
-nota da un pianoforte sintetizzato, perfetti anche per il gioco delle *sette note*.
+Tre fonti di canzoni, da usare anche insieme:
 
-Scritto in **Blazor Server (.NET 10)**. Nessun database, nessun account, nessuna
-connessione a Internet necessaria: basta una rete locale.
+- 🌐 **il catalogo online**: **695 canzoni vere in 22 playlist**, dalle hit di oggi ai
+  classici di sempre (pop, rock, rap, dance, disco, latino, cantautori, Sanremo, anni
+  60-70-80-90, colonne sonore, sigle dei cartoni, Natale…). Si sentono le **anteprime
+  ufficiali di 30 secondi** e, quando si svela il titolo, la **copertina dell'album**;
+- 🎹 **30 melodie al pianoforte** già incluse, che funzionano anche senza Internet, perfette
+  per il gioco delle *sette note*;
+- 🎵 **le tue canzoni** (mp3, m4a, ogg, wav…), suonate per intero.
+
+Scritto in **Blazor Server (.NET 10)**. Nessun database, nessun account. Internet serve
+solo al PC della regia e solo per il catalogo online: melodie e brani propri funzionano su
+una rete locale qualsiasi.
 
 ---
 
@@ -23,7 +30,8 @@ connessione a Internet necessaria: basta una rete locale.
 - [Come si conduce una partita](#come-si-conduce-una-partita)
 - [Le impostazioni](#le-impostazioni)
 - [Scorciatoie da tastiera](#scorciatoie-da-tastiera)
-- [Le canzoni](#le-canzoni)
+- [Il catalogo online](#il-catalogo-online)
+- [Le tue canzoni](#le-tue-canzoni)
 - [Le melodie](#le-melodie)
 - [Prenotarsi da fuori](#prenotarsi-da-fuori)
 - [Configurazione](#configurazione)
@@ -134,7 +142,7 @@ Tutte nel pannello **Preparazione** della regia, valgono appena le cambi:
 | Punti a chi indovina / tolti a chi sbaglia | Qualsiasi numero; il punteggio non scende sotto zero |
 | Secondi per rispondere | Conto alla rovescia dopo la prenotazione (0 = nessuno) |
 | Secondi di ascolto | Quanto si sente di ogni canzone (0 = tutta) |
-| Da che punto parte un brano | Dall'inizio, da un secondo preciso (per saltare l'intro) o da un punto a caso |
+| Da che punto parte un tuo brano | Dall'inizio, da un secondo preciso (per saltare l'intro) o da un punto a caso. I brani del catalogo partono dall'inizio dell'anteprima |
 | Note delle melodie | Il gioco delle *sette note*: quante note far sentire (0 = tutte) |
 | Dopo un errore la musica riparte | Sì/no |
 | Quando si svela il titolo la canzone continua | Sì/no |
@@ -157,7 +165,63 @@ Non valgono mentre stai scrivendo in un campo di testo.
 
 ---
 
-## Le canzoni
+## Il catalogo online
+
+Nella cartella [`catalogo/`](catalogo) ci sono **695 canzoni in 22 playlist**, scelte per
+coprire i generi principali con le hit degli ultimi 25 anni e i grandi classici:
+
+| Playlist | Brani | | Playlist | Brani |
+|---|---:|---|---|---:|
+| Pop italiano dal 2000 | 45 | | Anni 80 italiani e italo disco | 24 |
+| Pop internazionale dal 2000 | 58 | | Anni 90 internazionali | 33 |
+| Rap e trap italiano | 25 | | Anni 90 italiani | 21 |
+| Hip hop e R&B | 37 | | Dance ed elettronica | 34 |
+| Rock italiano | 29 | | Disco e funk | 27 |
+| Rock internazionale | 49 | | Latino e reggaeton | 31 |
+| Cantautori italiani | 40 | | Tormentoni estivi italiani | 20 |
+| Sanremo, vincitori e canzoni storiche | 40 | | Colonne sonore e canzoni dei film | 23 |
+| Classici internazionali anni 50, 60 e 70 | 42 | | Sigle dei cartoni animati | 19 |
+| Classici italiani anni 50, 60 e 70 | 33 | | Soul, jazz e swing | 16 |
+| Anni 80 internazionali | 36 | | Canzoni di Natale | 13 |
+
+**Come funziona.** Il catalogo contiene solo *titolo, artista e anno*: nessun file audio
+viene distribuito con il programma. Quando una canzone va in gioco, il PC della regia cerca
+la sua **anteprima ufficiale di 30 secondi** su Deezer (e, se serve, su iTunes), la scarica
+insieme alla copertina e la passa allo schermo attraverso la rete locale. Quindi:
+
+- **Internet serve solo al PC della regia**, non alla TV né ai telefoni;
+- mentre si gioca una canzone, la successiva viene già scaricata: non si aspetta;
+- in regia, sotto il titolo, compare *«Anteprima da Deezer: titolo — artista»*, per
+  controllare al volo che sia il brano giusto;
+- quando si svela il titolo, sullo schermo compaiono **copertina, artista e anno**;
+- senza Internet la regia lo dice chiaramente e suggerisce di passare alle melodie o ai
+  propri brani.
+
+Il programma accetta un risultato solo se **artista e titolo corrispondono** e scarta live,
+remix, karaoke, cover e tributi: meglio nessuna anteprima che quella sbagliata.
+
+### Aggiungere canzoni al catalogo
+
+Basta una riga in un file `.txt` di `catalogo/` (o un file nuovo, che diventa una playlist):
+
+```
+# TEMA: La mia playlist
+
+Albachiara | Vasco Rossi | 1979
+Bohemian Rhapsody | Queen | 1975
+```
+
+I campi sono `TITOLO | ARTISTA | ANNO` (l'anno è facoltativo). Per controllare che ogni
+canzone abbia un'anteprima, dalla cartella del programma:
+
+```powershell
+.\Sarabanda.exe --verifica-catalogo           # elenca i brani non trovati
+.\Sarabanda.exe --verifica-catalogo --tutti   # mostra anche cosa trova per ciascuno
+```
+
+---
+
+## Le tue canzoni
 
 Metti i tuoi brani nella cartella **`canzoni/`** accanto all'eseguibile:
 
@@ -242,7 +306,9 @@ La 5110 è scelta per convivere con gli altri giochi della serata: *L'Intesa Vin
 ```
 Models/                   tipi di dati: Song, Team, PlayerCommand, enum
 Services/
-  SongLibrary.cs          trova i brani audio e legge le melodie
+  SongLibrary.cs          trova i brani audio, legge melodie e catalogo
+  PreviewService.cs       cerca e scarica le anteprime del catalogo (Deezer, iTunes)
+  CatalogCheck.cs         la verifica del catalogo da riga di comando
   GameService.cs          lo stato della partita, condiviso da tutte le pagine
   NetworkInfo.cs          trova gli indirizzi di rete da suggerire nel menu
 Components/
@@ -252,6 +318,7 @@ Components/
 wwwroot/
   app.css                 colori, tipografia e spaziature in un posto solo
   player.js               lettore dei file, pianoforte sintetizzato, effetti sonori
+catalogo/                 le 695 canzoni del catalogo online (solo titolo, artista, anno)
 melodie/                  le 30 melodie incluse
 canzoni/                  i tuoi brani (non versionati)
 ```
@@ -267,8 +334,10 @@ Le idee portanti:
    file lo calcola ogni lettore con dati uguali per tutti, così due schermi suonano lo
    stesso punto.
 3. **I file audio si servono per identificatore**, mai per percorso, con le richieste
-   parziali attive (servono per partire da metà brano).
-4. **Niente framework CSS, font o suoni da Internet.**
+   parziali attive (servono per partire da metà brano). Le anteprime del catalogo le
+   scarica il server e le serve allo stesso modo (`/audio/online/{id}`, `/cover/{id}`).
+4. **Niente framework CSS, font o suoni da Internet.** L'unica cosa che viene da fuori
+   sono le anteprime del catalogo, e solo se lo si usa.
 
 ```bash
 dotnet build                      # compilazione (deve restare a 0 warning)
@@ -291,5 +360,7 @@ va esposta su Internet**.
 
 Progetto personale, per giocare in famiglia. Il format televisivo e il nome appartengono
 ai rispettivi proprietari; questo è un gioco fatto in casa, senza alcun legame con la
-trasmissione. Le melodie incluse sono di pubblico dominio; i brani che aggiungi restano tuoi
-e non fanno parte del progetto.
+trasmissione. Le melodie incluse sono di pubblico dominio. Il catalogo contiene solo titoli,
+artisti e anni: l'audio sono le anteprime ufficiali messe a disposizione da Deezer e iTunes,
+ascoltate al momento e mai salvate su disco. I brani che aggiungi restano tuoi e non fanno
+parte del progetto.

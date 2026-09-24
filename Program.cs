@@ -3,6 +3,11 @@ using Sarabanda.Components;
 using Sarabanda.Models;
 using Sarabanda.Services;
 
+// "Sarabanda.exe --verifica-catalogo" controlla che ogni brano del catalogo online abbia
+// un'anteprima, poi esce: serve a chi aggiunge canzoni ai file di catalogo/.
+if (args.Contains("--verifica-catalogo"))
+    return await CatalogCheck.RunAsync(args.Contains("--tutti"));
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Blazor Server: l'interfaccia vive sul server e arriva al browser via SignalR,
@@ -11,6 +16,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Una sola partita per processo, condivisa da regia, schermo e telefoni.
+builder.Services.AddSingleton<PreviewService>();
 builder.Services.AddSingleton<GameService>();
 
 // In ascolto su tutte le interfacce di rete, così gli altri dispositivi della LAN
@@ -41,6 +47,7 @@ MapGameApi(app);
 
 app.Logger.LogInformation("Sarabanda è in ascolto sulla porta {Port}.", port);
 app.Run();
+return 0;
 
 // ================================================================
 //  Brani audio
@@ -67,6 +74,18 @@ static void MapAudio(WebApplication app)
 
         return Results.File(song.FilePath, contentType, enableRangeProcessing: true);
     });
+
+    // Le anteprime del catalogo online: le ha già scaricate il server, gli schermi le
+    // ricevono da qui e non hanno bisogno di Internet.
+    app.MapGet("/audio/online/{id}", (string id, PreviewService previews) =>
+        previews.Cached(id) is { } preview
+            ? Results.File(preview.Audio, preview.ContentType, enableRangeProcessing: true)
+            : Results.NotFound());
+
+    app.MapGet("/cover/{id}", (string id, PreviewService previews) =>
+        previews.Cached(id) is { Cover: { } cover } preview
+            ? Results.File(cover, preview.CoverType)
+            : Results.NotFound());
 }
 
 // ================================================================

@@ -1339,3 +1339,42 @@ fieldset:disabled {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---- Catalogo online ---- */
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    margin: var(--s-2) 0 0;
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-md);
+    background: rgba(255, 255, 255, .04);
+    color: var(--c-text-faint);
+    font-size: .8rem;
+    line-height: 1.45;
+    list-style: none;
+}
+
+.legend strong {
+    color: var(--c-text-dim);
+}
+
+.preview-state {
+    margin: var(--s-2) 0 0;
+    font-size: .84rem;
+}
+
+.preview-state.loading {
+    color: var(--c-gold-soft);
+    animation: pulse-soft 1.2s ease-in-out infinite;
+}
+
+.preview-state.ready {
+    color: var(--c-text-faint);
+}
+
+@keyframes pulse-soft {
+    50% {
+        opacity: .55;
+    }
+}

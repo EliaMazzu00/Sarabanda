@@ -1,0 +1,17 @@
+# TEMA: Canzoni di Natale
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+All I Want for Christmas Is You | Mariah Carey | 1994
+Last Christmas | Wham! | 1984
+White Christmas | Bing Crosby | 1942
+It's Beginning to Look a Lot Like Christmas | Michael Bublé | 2011
+Rockin' Around the Christmas Tree | Brenda Lee | 1958
+Jingle Bell Rock | Bobby Helms | 1957
+Feliz Navidad | José Feliciano | 1970
+Driving Home for Christmas | Chris Rea | 1986
+Do They Know It's Christmas? | Band Aid | 1984
+Happy Xmas (War Is Over) | John Lennon | 1971
+Let It Snow! Let It Snow! Let It Snow! | Frank Sinatra | 1950
+Blue Christmas | Elvis Presley | 1957
+Santa Tell Me | Ariana Grande | 2014

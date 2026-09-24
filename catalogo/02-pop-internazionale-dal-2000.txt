@@ -1,0 +1,62 @@
+# TEMA: Pop internazionale dal 2000
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Toxic | Britney Spears | 2004
+Crazy in Love | Beyoncé | 2003
+Umbrella | Rihanna | 2007
+Diamonds | Rihanna | 2012
+Poker Face | Lady Gaga | 2008
+Bad Romance | Lady Gaga | 2009
+Firework | Katy Perry | 2010
+Roar | Katy Perry | 2013
+Rolling in the Deep | Adele | 2010
+Someone Like You | Adele | 2011
+Hello | Adele | 2015
+Just the Way You Are | Bruno Mars | 2010
+Uptown Funk | Mark Ronson | 2014
+Shape of You | Ed Sheeran | 2017
+Perfect | Ed Sheeran | 2017
+Shake It Off | Taylor Swift | 2014
+Blank Space | Taylor Swift | 2014
+Anti-Hero | Taylor Swift | 2022
+Blinding Lights | The Weeknd | 2019
+Save Your Tears | The Weeknd | 2020
+Levitating | Dua Lipa | 2020
+New Rules | Dua Lipa | 2017
+bad guy | Billie Eilish | 2019
+BIRDS OF A FEATHER | Billie Eilish | 2024
+As It Was | Harry Styles | 2022
+Watermelon Sugar | Harry Styles | 2019
+Flowers | Miley Cyrus | 2023
+drivers license | Olivia Rodrigo | 2021
+Sorry | Justin Bieber | 2015
+Can't Stop the Feeling! | Justin Timberlake | 2016
+Happy | Pharrell Williams | 2013
+Somebody That I Used to Know | Gotye | 2011
+A Sky Full of Stars | Coldplay | 2014
+Yellow | Coldplay | 2000
+Clocks | Coldplay | 2002
+Moves Like Jagger | Maroon 5 | 2011
+Hips Don't Lie | Shakira | 2006
+Waka Waka (This Time for Africa) | Shakira | 2010
+Rehab | Amy Winehouse | 2006
+Back to Black | Amy Winehouse | 2006
+Maneater | Nelly Furtado | 2006
+Can't Get You Out of My Head | Kylie Minogue | 2001
+You're Beautiful | James Blunt | 2004
+Counting Stars | OneRepublic | 2013
+Chandelier | Sia | 2014
+Someone You Loved | Lewis Capaldi | 2018
+Espresso | Sabrina Carpenter | 2024
+Good Luck, Babe! | Chappell Roan | 2024
+Die With A Smile | Lady Gaga | 2024
+APT. | ROSÉ | 2024
+Lose Control | Teddy Swims | 2023
+Take Me to Church | Hozier | 2013
+Royals | Lorde | 2013
+Call Me Maybe | Carly Rae Jepsen | 2011
+Beautiful | Christina Aguilera | 2002
+Feel | Robbie Williams | 2002
+So What | P!nk | 2008
+Stay | The Kid LAROI | 2021

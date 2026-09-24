@@ -312,6 +312,10 @@
 
         if (cmd.kind === 'melody') {
             applyMelody(cmd);
+        } else if (!cmd.url) {
+            // Brano del catalogo con l'anteprima non ancora arrivata: si aspetta il
+            // prossimo comando, che avrà l'indirizzo.
+            stopAll();
         } else {
             applyAudio(cmd);
         }

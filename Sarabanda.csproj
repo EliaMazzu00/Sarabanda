@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
 
     <!-- La navigazione fuori da un contesto interattivo non deve sollevare eccezioni. -->
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
@@ -13,11 +13,14 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);publish-win-x64-self-contained\**;canzoni\**</DefaultItemExcludes>
   </PropertyGroup>
 
-  <!-- Le melodie incluse e il LEGGIMI della cartella canzoni devono stare accanto
-       all'eseguibile, sia in compilazione sia in pubblicazione: SongLibrary li cerca
-       in ContentRootPath/melodie e ContentRootPath/canzoni. I brani audio veri non
+  <!-- Il catalogo online, le melodie incluse e il LEGGIMI della cartella canzoni devono
+       stare accanto all'eseguibile, sia in compilazione sia in pubblicazione: SongLibrary
+       li cerca in ContentRootPath/catalogo, /melodie e /canzoni. I brani audio veri non
        fanno parte del progetto: li mette l'utente. -->
   <ItemGroup>
+    <Content Include="catalogo\**\*.txt"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
     <Content Include="melodie\**\*.txt"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />

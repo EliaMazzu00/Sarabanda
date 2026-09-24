@@ -1,0 +1,53 @@
+# TEMA: Rock internazionale
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Bohemian Rhapsody | Queen | 1975
+We Will Rock You | Queen | 1977
+Don't Stop Me Now | Queen | 1978
+Another One Bites the Dust | Queen | 1980
+Stairway to Heaven | Led Zeppelin | 1971
+Whole Lotta Love | Led Zeppelin | 1969
+Smoke on the Water | Deep Purple | 1972
+Highway to Hell | AC/DC | 1979
+Back in Black | AC/DC | 1980
+Sweet Child O' Mine | Guns N' Roses | 1987
+Livin' on a Prayer | Bon Jovi | 1986
+It's My Life | Bon Jovi | 2000
+The Final Countdown | Europe | 1986
+Hotel California | Eagles | 1976
+Another Brick in the Wall, Pt. 2 | Pink Floyd | 1979
+Sultans of Swing | Dire Straits | 1978
+Every Breath You Take | The Police | 1983
+With or Without You | U2 | 1987
+One | U2 | 1991
+Smells Like Teen Spirit | Nirvana | 1991
+Californication | Red Hot Chili Peppers | 1999
+Can't Stop | Red Hot Chili Peppers | 2002
+Wonderwall | Oasis | 1995
+Don't Look Back in Anger | Oasis | 1996
+Creep | Radiohead | 1992
+Enter Sandman | Metallica | 1991
+Nothing Else Matters | Metallica | 1991
+Seven Nation Army | The White Stripes | 2003
+Mr. Brightside | The Killers | 2003
+Boulevard of Broken Dreams | Green Day | 2004
+In the End | Linkin Park | 2000
+Numb | Linkin Park | 2003
+Uprising | Muse | 2009
+Do I Wanna Know? | Arctic Monkeys | 2013
+Radioactive | Imagine Dragons | 2012
+Believer | Imagine Dragons | 2017
+Take Me Out | Franz Ferdinand | 2004
+Sex on Fire | Kings of Leon | 2008
+Zombie | The Cranberries | 1994
+Wind of Change | Scorpions | 1990
+I Don't Want to Miss a Thing | Aerosmith | 1998
+Africa | Toto | 1982
+Don't Stop Believin' | Journey | 1981
+Jump | Van Halen | 1984
+Should I Stay or Should I Go | The Clash | 1982
+Born in the U.S.A. | Bruce Springsteen | 1984
+Heroes | David Bowie | 1977
+Paranoid | Black Sabbath | 1970
+The Trooper | Iron Maiden | 1983

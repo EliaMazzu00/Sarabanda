@@ -1,0 +1,40 @@
+# TEMA: Anni 80 internazionali
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Billie Jean | Michael Jackson | 1982
+Thriller | Michael Jackson | 1982
+Beat It | Michael Jackson | 1982
+Bad | Michael Jackson | 1987
+Smooth Criminal | Michael Jackson | 1987
+Like a Virgin | Madonna | 1984
+Like a Prayer | Madonna | 1989
+La Isla Bonita | Madonna | 1987
+Purple Rain | Prince | 1984
+Kiss | Prince | 1986
+I Wanna Dance with Somebody (Who Loves Me) | Whitney Houston | 1987
+Girls Just Want to Have Fun | Cyndi Lauper | 1983
+Take On Me | a-ha | 1985
+Wake Me Up Before You Go-Go | Wham! | 1984
+Careless Whisper | George Michael | 1984
+The Wild Boys | Duran Duran | 1984
+True | Spandau Ballet | 1983
+Everybody Wants to Rule the World | Tears for Fears | 1985
+Sweet Dreams (Are Made of This) | Eurythmics | 1983
+Just Can't Get Enough | Depeche Mode | 1981
+Karma Chameleon | Culture Club | 1983
+In the Air Tonight | Phil Collins | 1981
+Never Gonna Give You Up | Rick Astley | 1987
+Kids in America | Kim Wilde | 1981
+The Best | Tina Turner | 1989
+Total Eclipse of the Heart | Bonnie Tyler | 1983
+All Night Long (All Night) | Lionel Richie | 1983
+Don't You Want Me | The Human League | 1981
+Down Under | Men at Work | 1981
+Red Red Wine | UB40 | 1983
+Venus | Bananarama | 1986
+You Spin Me Round (Like a Record) | Dead or Alive | 1984
+Gloria | Laura Branigan | 1982
+Summer of '69 | Bryan Adams | 1984
+Radio Ga Ga | Queen | 1984
+Relax | Frankie Goes to Hollywood | 1983

@@ -1,0 +1,46 @@
+# TEMA: Classici internazionali anni 50, 60 e 70
+#
+# Catalogo online: una canzone per riga   TITOLO | ARTISTA | ANNO
+
+Hey Jude | The Beatles | 1968
+Let It Be | The Beatles | 1970
+Yesterday | The Beatles | 1965
+Help! | The Beatles | 1965
+Come Together | The Beatles | 1969
+Here Comes the Sun | The Beatles | 1969
+Twist and Shout | The Beatles | 1963
+(I Can't Get No) Satisfaction | The Rolling Stones | 1965
+Paint It Black | The Rolling Stones | 1966
+Jailhouse Rock | Elvis Presley | 1957
+Can't Help Falling in Love | Elvis Presley | 1961
+Suspicious Minds | Elvis Presley | 1969
+Johnny B. Goode | Chuck Berry | 1958
+Stand by Me | Ben E. King | 1961
+Good Vibrations | The Beach Boys | 1966
+Surfin' U.S.A. | The Beach Boys | 1963
+The House of the Rising Sun | The Animals | 1964
+The Sound of Silence | Simon & Garfunkel | 1965
+Mrs. Robinson | Simon & Garfunkel | 1968
+Like a Rolling Stone | Bob Dylan | 1965
+Blowin' in the Wind | Bob Dylan | 1963
+Light My Fire | The Doors | 1967
+Purple Haze | Jimi Hendrix | 1967
+What a Wonderful World | Louis Armstrong | 1967
+My Way | Frank Sinatra | 1969
+Fly Me to the Moon | Frank Sinatra | 1964
+Respect | Aretha Franklin | 1967
+I Heard It Through the Grapevine | Marvin Gaye | 1968
+(Sittin' On) The Dock of the Bay | Otis Redding | 1968
+You Really Got Me | The Kinks | 1964
+My Generation | The Who | 1965
+Dancing Queen | ABBA | 1976
+Mamma Mia | ABBA | 1975
+Waterloo | ABBA | 1974
+Your Song | Elton John | 1970
+Rocket Man | Elton John | 1972
+Imagine | John Lennon | 1971
+No Woman, No Cry | Bob Marley & The Wailers | 1974
+Could You Be Loved | Bob Marley & The Wailers | 1980
+Dreams | Fleetwood Mac | 1977
+Superstition | Stevie Wonder | 1972
+Bridge over Troubled Water | Simon & Garfunkel | 1970

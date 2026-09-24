@@ -29,7 +29,13 @@ public enum SongKind
     Audio,
 
     /// <summary>Una melodia scritta nota per nota, suonata dal pianoforte sintetizzato.</summary>
-    Melody
+    Melody,
+
+    /// <summary>
+    /// Un brano del catalogo: solo titolo, artista e anno. L'audio è l'anteprima ufficiale
+    /// di 30 secondi, cercata e scaricata al momento da Deezer o iTunes (serve Internet).
+    /// </summary>
+    Online
 }
 
 /// <summary>Dove esce la musica.</summary>
@@ -69,4 +75,20 @@ public enum PlayerAction
 
     /// <summary>In pausa.</summary>
     Pause
+}
+
+/// <summary>A che punto è l'anteprima di un brano del catalogo online.</summary>
+public enum PreviewState
+{
+    /// <summary>Il brano non è del catalogo online: non serve anteprima.</summary>
+    None,
+
+    /// <summary>La si sta cercando e scaricando.</summary>
+    Loading,
+
+    /// <summary>Scaricata: si può suonare.</summary>
+    Ready,
+
+    /// <summary>Non trovata, o manca Internet.</summary>
+    Failed
 }

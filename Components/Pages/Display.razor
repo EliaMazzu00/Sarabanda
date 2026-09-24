@@ -24,7 +24,7 @@
                 <span class="song-number">Canzone n. @Game.SongNumber</span>
                 @if (Game.ShowPlaylist)
                 {
-                    <span class="song-playlist">@(info.Kind == SongKind.Melody ? "🎹" : "🎵") @info.Playlist</span>
+                    <span class="song-playlist">@info.Kind.Icon() @info.Playlist</span>
                 }
                 @if (info.Kind == SongKind.Melody && Game.NoteLimit > 0)
                 {
@@ -49,7 +49,7 @@
                 <div class="ready">
                     <div class="vinyl" aria-hidden="true"><span class="vinyl-label">?</span></div>
                     <div class="ready-title">Canzone n. @Game.SongNumber</div>
-                    <div class="ready-sub">Pronti a prenotarvi?</div>
+                    <div class="ready-sub">@(Game.WaitingForPreview ? "Arriva la canzone…" : "Pronti a prenotarvi?")</div>
                 </div>
                 break;
 
@@ -77,6 +77,10 @@
                         else if (Game.ListenOver)
                         {
                             <span>Ascolto finito: chi la sa, prenoti!</span>
+                        }
+                        else if (Game.PreviewState == PreviewState.Loading)
+                        {
+                            <span class="arriving">Arriva la canzone…</span>
                         }
                         else
                         {
@@ -112,14 +116,27 @@
 
             case GameStatus.Revealed when Game.CurrentSong is { } song:
                 <div class="revealed">
-                    <div class="vinyl big @(Game.IsPlaying ? "spinning" : "")" aria-hidden="true">
-                        <span class="vinyl-label">♪</span>
-                    </div>
+                    @if (Game.CoverUrl is { } cover)
+                    {
+                        <div class="cover-wrap @(Game.IsPlaying ? "playing" : "")">
+                            <div class="vinyl behind @(Game.IsPlaying ? "spinning" : "")" aria-hidden="true"><span class="vinyl-label">♪</span></div>
+                            <img class="cover" src="@cover" alt="Copertina di @song.Title" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="vinyl big @(Game.IsPlaying ? "spinning" : "")" aria-hidden="true">
+                            <span class="vinyl-label">♪</span>
+                        </div>
+                    }
                     <div class="reveal-text">
                         <div class="reveal-title">@song.Title</div>
                         @if (song.Artist.Length > 0)
                         {
-                            <div class="reveal-artist">@song.Artist</div>
+                            <div class="reveal-artist">@song.Artist@if (song.Year is { } year)
+                                {
+                                    <span class="reveal-year"> · @year</span>
+                                }</div>
                         }
                         <div class="reveal-winner">
                             @if (WinnerTeam is { } winner)

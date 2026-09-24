@@ -39,11 +39,12 @@ public sealed partial class SongLibrary
     private Dictionary<string, Song> _byId = new(StringComparer.OrdinalIgnoreCase);
     private List<PlaylistInfo> _playlists = new();
 
-    /// <summary>Crea la libreria e legge subito le due cartelle.</summary>
-    public SongLibrary(string audioPath, string melodyPath, ILogger logger)
+    /// <summary>Crea la libreria e legge subito le cartelle.</summary>
+    public SongLibrary(string audioPath, string melodyPath, string catalogPath, ILogger logger)
     {
         AudioPath = audioPath;
         MelodyPath = melodyPath;
+        CatalogPath = catalogPath;
         _logger = logger;
         Reload();
     }
@@ -54,10 +55,13 @@ public sealed partial class SongLibrary
     /// <summary>La cartella delle melodie.</summary>
     public string MelodyPath { get; }
 
-    /// <summary>Le playlist trovate: prima quelle audio, poi le melodie.</summary>
+    /// <summary>La cartella del catalogo online.</summary>
+    public string CatalogPath { get; }
+
+    /// <summary>Le playlist trovate: prima quelle audio, poi il catalogo online, poi le melodie.</summary>
     public IReadOnlyList<PlaylistInfo> Playlists => _playlists;
 
-    /// <summary>Le righe di melodia scartate all'ultima lettura, con il motivo.</summary>
+    /// <summary>Le righe di melodie e catalogo scartate all'ultima lettura, con il motivo.</summary>
     public IReadOnlyList<string> Rejected { get; private set; } = Array.Empty<string>();
 
     /// <summary>Trova un brano per identificatore.</summary>
@@ -76,7 +80,7 @@ public sealed partial class SongLibrary
         return songs;
     }
 
-    /// <summary>Rilegge le due cartelle da zero.</summary>
+    /// <summary>Rilegge le cartelle da zero.</summary>
     public void Reload()
     {
         var byPlaylist = new Dictionary<string, List<Song>>(StringComparer.OrdinalIgnoreCase);
@@ -90,6 +94,15 @@ public sealed partial class SongLibrary
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _logger.LogWarning(ex, "Cartella dei brani non leggibile: {Path}", AudioPath);
+        }
+
+        try
+        {
+            ReadCatalog(byPlaylist, playlists, rejected);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _logger.LogWarning(ex, "Cartella del catalogo non leggibile: {Path}", CatalogPath);
         }
 
         try
@@ -209,6 +222,88 @@ public sealed partial class SongLibrary
         await using var output = File.Create(target);
         await content.CopyToAsync(output, cancellationToken);
         return target;
+    }
+
+    // ============================================================
+    //  Catalogo online
+    // ============================================================
+
+    /// <summary>
+    /// Legge i file del catalogo: una canzone per riga, <c>TITOLO | ARTISTA | ANNO</c>
+    /// (l'anno è facoltativo). L'audio non c'è: lo cerca <see cref="PreviewService"/> al
+    /// momento del gioco.
+    /// </summary>
+    private void ReadCatalog(Dictionary<string, List<Song>> byPlaylist, List<PlaylistInfo> playlists, List<string> rejected)
+    {
+        if (!Directory.Exists(CatalogPath))
+            return;
+
+        var files = Directory
+            .EnumerateFiles(CatalogPath, "*.txt")
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var path in files)
+        {
+            var lines = File.ReadAllLines(path);
+            var fileId = Path.GetFileNameWithoutExtension(path);
+            var name = ReadThemeName(lines, fileId);
+            var id = "online:" + fileId;
+            var songs = new List<Song>();
+
+            int number = 0;
+            foreach (var raw in lines)
+            {
+                number++;
+                var line = raw.Trim();
+                if (line.Length == 0 || line.StartsWith('#'))
+                    continue;
+
+                if (TryParseCatalogLine(line, name, out var song, out var error))
+                    songs.Add(song);
+                else
+                    rejected.Add($"{Path.GetFileName(path)}, riga {number}: {error}");
+            }
+
+            byPlaylist[id] = songs;
+            playlists.Add(new PlaylistInfo(id, name, SongKind.Online, songs.Count));
+        }
+    }
+
+    /// <summary>Interpreta una riga del catalogo: <c>TITOLO | ARTISTA | ANNO</c>.</summary>
+    public static bool TryParseCatalogLine(string line, string playlist, out Song song, out string error)
+    {
+        song = null!;
+        var fields = line.Split('|').Select(f => Tidy(f.Trim())).ToArray();
+
+        if (fields.Length < 2 || fields[0].Length == 0 || fields[1].Length == 0)
+        {
+            error = "servono almeno titolo e artista: TITOLO | ARTISTA | ANNO";
+            return false;
+        }
+
+        int? year = null;
+        if (fields.Length > 2 && fields[2].Length > 0)
+        {
+            if (!int.TryParse(fields[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var y) || y < 1900 || y > 2100)
+            {
+                error = $"anno \"{fields[2]}\" non valido";
+                return false;
+            }
+            year = y;
+        }
+
+        song = new Song
+        {
+            // Lo stesso brano ha lo stesso identificatore in qualsiasi playlist compaia.
+            Id = "c" + HashId(fields[1] + "|" + fields[0]),
+            Kind = SongKind.Online,
+            Title = fields[0],
+            Artist = fields[1],
+            Playlist = playlist,
+            Year = year
+        };
+        error = "";
+        return true;
     }
 
     // ============================================================

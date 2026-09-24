@@ -46,6 +46,7 @@ public sealed class GameService : IDisposable
     private readonly object _lock = new();
     private readonly Random _random = new();
     private readonly SongLibrary _library;
+    private readonly PreviewService _previews;
     private readonly ILogger<GameService> _logger;
     private readonly Timer _ticker;
 
@@ -59,12 +60,14 @@ public sealed class GameService : IDisposable
     private int _lastNotifiedTick = -1;
 
     /// <summary>Crea il servizio e seleziona tutte le playlist trovate.</summary>
-    public GameService(IWebHostEnvironment environment, ILogger<GameService> logger)
+    public GameService(IWebHostEnvironment environment, PreviewService previews, ILogger<GameService> logger)
     {
+        _previews = previews;
         _logger = logger;
         _library = new SongLibrary(
             Path.Combine(environment.ContentRootPath, "canzoni"),
             Path.Combine(environment.ContentRootPath, "melodie"),
+            Path.Combine(environment.ContentRootPath, "catalogo"),
             logger);
 
         _ticker = new Timer(TickInterval.TotalMilliseconds) { AutoReset = true };
@@ -74,7 +77,10 @@ public sealed class GameService : IDisposable
         _teams = Enumerable.Range(0, 2).Select(NewTeam).ToArray();
         _locked = new bool[_teams.Length];
 
-        UsePlaylists(_library.Playlists.Select(p => p.Id));
+        // All'avvio: le canzoni vere (catalogo e brani propri). Le melodie restano a un clic;
+        // se non c'è nient'altro, si parte da quelle.
+        var songs = _library.Playlists.Where(p => p.Kind != SongKind.Melody).ToList();
+        UsePlaylists((songs.Count > 0 ? songs : _library.Playlists).Select(p => p.Id));
     }
 
     /// <summary>Scatta a ogni cambiamento di stato: le pagine si ridisegnano.</summary>
@@ -504,8 +510,10 @@ public sealed class GameService : IDisposable
             Action = action,
             Kind = song?.Kind == SongKind.Melody ? "melody" : "audio",
             SongId = song?.Id ?? "",
-            Url = song?.Url ?? "",
-            StartMode = StartFrom switch
+            // Un brano del catalogo si può suonare solo quando l'anteprima è arrivata.
+            Url = song is { Kind: SongKind.Online } && PreviewState != PreviewState.Ready ? "" : song?.Url ?? "",
+            // L'anteprima è già un estratto di 30 secondi: si parte sempre dal suo inizio.
+            StartMode = song?.Kind == SongKind.Online ? "beginning" : StartFrom switch
             {
                 StartMode.Fixed => "fixed",
                 StartMode.Random => "random",
@@ -528,6 +536,13 @@ public sealed class GameService : IDisposable
         if (IsPlaying || CurrentSong is null)
             return;
 
+        // Anteprima non ancora arrivata: si parte appena è pronta.
+        if (CurrentSong.Kind == SongKind.Online && PreviewState != PreviewState.Ready)
+        {
+            _playWhenReady = PreviewState == PreviewState.Loading;
+            return;
+        }
+
         IsPlaying = true;
         _playClock.Restart();
         IssueCommandLocked();
@@ -535,6 +550,8 @@ public sealed class GameService : IDisposable
 
     private void StopPlayingLocked()
     {
+        _playWhenReady = false;
+
         if (!IsPlaying)
             return;
 
@@ -615,11 +632,96 @@ public sealed class GameService : IDisposable
         _startFraction = _random.NextDouble();
         NoteLimit = CurrentSong.Kind == SongKind.Melody ? MelodyNotes : 0;
         PlayerError = null;
+        _playWhenReady = false;
+        PreviewState = CurrentSong.Kind == SongKind.Online ? PreviewState.Loading : PreviewState.None;
+        CurrentPreview = null;
 
         RewindLocked();
         Status = GameStatus.Ready;
         IssueCommandLocked();
         CueLocked(SoundCue.NewSong);
+
+        if (CurrentSong.Kind == SongKind.Online)
+        {
+            _ = LoadPreviewAsync(CurrentSong);
+            PrefetchNextLocked(index);
+        }
+    }
+
+    // ============================================================
+    //  Anteprime del catalogo online
+    // ============================================================
+
+    private bool _playWhenReady;
+
+    /// <summary>Vero se la regia ha premuto "suona" e si aspetta solo che arrivi l'anteprima.</summary>
+    public bool WaitingForPreview => _playWhenReady;
+
+    /// <summary>A che punto è l'anteprima del brano in gioco (solo catalogo online).</summary>
+    public PreviewState PreviewState { get; private set; }
+
+    /// <summary>L'anteprima del brano in gioco, quando è arrivata.</summary>
+    public Preview? CurrentPreview { get; private set; }
+
+    /// <summary>Indirizzo della copertina da mostrare quando si svela il titolo, se c'è.</summary>
+    public string? CoverUrl => CurrentPreview?.Cover is not null && CurrentSong is { } song ? $"cover/{song.Id}" : null;
+
+    /// <summary>Cerca l'anteprima e, se nel frattempo è stato premuto "suona", fa partire la musica.</summary>
+    private async Task LoadPreviewAsync(Song song)
+    {
+        var (status, preview) = await _previews.GetAsync(song);
+
+        lock (_lock)
+        {
+            if (CurrentSong?.Id != song.Id || PreviewState != PreviewState.Loading)
+                return;
+
+            if (preview is not null)
+            {
+                CurrentPreview = preview;
+                PreviewState = PreviewState.Ready;
+
+                if (_playWhenReady && Status is GameStatus.Ready or GameStatus.Listening or GameStatus.Revealed)
+                {
+                    _playWhenReady = false;
+                    if (Status == GameStatus.Ready)
+                        Status = GameStatus.Listening;
+                    StartPlayingLocked();
+                }
+                else
+                {
+                    // Gli schermi intanto scaricano il brano, così parte senza attese.
+                    IssueCommandLocked();
+                }
+            }
+            else
+            {
+                PreviewState = PreviewState.Failed;
+                _playWhenReady = false;
+                PlayerError = status == PreviewStatus.Offline
+                    ? "Non c'è connessione a Internet: i brani del catalogo 🌐 hanno bisogno di Internet sul PC della regia. Usa le melodie o le tue canzoni."
+                    : $"Anteprima non trovata per \"{song.Label}\" né su Deezer né su iTunes.";
+            }
+        }
+
+        Notify();
+    }
+
+    /// <summary>Scarica in anticipo l'anteprima della prossima canzone, per non far aspettare.</summary>
+    private void PrefetchNextLocked(int currentIndex)
+    {
+        int start = Array.IndexOf(_order, currentIndex) + 1;
+
+        for (int step = 0; step < _order.Length; step++)
+        {
+            int index = _order[(start + step) % _order.Length];
+            if (!_played[index])
+            {
+                if (_loaded[index] is { Kind: SongKind.Online } next)
+                    _ = _previews.GetAsync(next);
+                return;
+            }
+        }
     }
 
     /// <summary>
@@ -632,6 +734,12 @@ public sealed class GameService : IDisposable
         {
             switch (Status)
             {
+                case GameStatus.Ready when CurrentSong?.Kind == SongKind.Online && PreviewState != PreviewState.Ready:
+                    // L'anteprima non c'è ancora: si resta su "Pronti?" (niente prenotazioni
+                    // prima di aver sentito qualcosa) e si parte appena arriva.
+                    _playWhenReady = PreviewState == PreviewState.Loading;
+                    break;
+
                 case GameStatus.Ready:
                     Status = GameStatus.Listening;
                     StartPlayingLocked();
