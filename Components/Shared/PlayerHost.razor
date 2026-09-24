@@ -1,0 +1,146 @@
+@implements IAsyncDisposable
+@inject GameService Game
+@inject IJSRuntime JS
+@inject ILogger<PlayerHost> Logger
+
+@*
+    Il lettore di una pagina. Esegue i comandi del server (suona, pausa, stop) se
+    la musica deve uscire da questa pagina, suona gli effetti e dice al server se
+    l'audio è attivo: così la regia sa se lo schermo è pronto.
+*@
+
+@if (ShowHint && Active && !audioReady)
+{
+    <div class="audio-hint" role="status">🔇 Audio non ancora attivo: clicca un punto qualsiasi di questa pagina</div>
+}
+
+@code {
+    /// <summary>Che pagina è: decide se la musica esce da qui.</summary>
+    [Parameter, EditorRequired] public AudioOutput Page { get; set; }
+
+    /// <summary>Nome della pagina per la regia ("Schermo", "Regia").</summary>
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+
+    /// <summary>Se mostrare l'avviso quando l'audio non è ancora attivo.</summary>
+    [Parameter] public bool ShowHint { get; set; } = true;
+
+    private readonly Guid id = Guid.NewGuid();
+    private DotNetObjectReference<PlayerHost>? selfReference;
+    private bool attached;
+    private bool audioReady;
+    private int lastSeq = -1;
+    private int lastCueId;
+    private bool wasActive;
+
+    /// <summary>Vero se la musica deve uscire da questa pagina.</summary>
+    private bool Active => Game.PlaysOn(Page);
+
+    /// <summary>Gli effetti sonori escono dallo schermo, o dalla regia se la musica è solo lì.</summary>
+    private bool PlaysEffects => Game.Sounds && (Page == AudioOutput.Display || Game.Output == AudioOutput.Admin);
+
+    protected override void OnInitialized()
+    {
+        lastCueId = Game.CueId;
+        Game.OnChange += OnGameChange;
+        Game.SetOutput(id, Name, false);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        try
+        {
+            selfReference = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("sarabanda.attach", selfReference);
+            attached = true;
+            await SyncAsync();
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Lettore audio non collegato.");
+        }
+    }
+
+    private void OnGameChange() => InvokeAsync(SyncAsync);
+
+    /// <summary>Allinea il lettore di questa pagina allo stato del server.</summary>
+    private async Task SyncAsync()
+    {
+        if (!attached)
+            return;
+
+        try
+        {
+            if (Active)
+            {
+                var command = Game.Command;
+                if (command.Seq != lastSeq || !wasActive)
+                {
+                    lastSeq = command.Seq;
+                    await JS.InvokeVoidAsync("sarabanda.apply", command);
+                }
+            }
+            else if (wasActive)
+            {
+                await JS.InvokeVoidAsync("sarabanda.silence");
+            }
+
+            wasActive = Active;
+
+            if (Game.CueId != lastCueId)
+            {
+                lastCueId = Game.CueId;
+                if (PlaysEffects)
+                    await JS.InvokeVoidAsync("sarabanda.sfx", Game.Cue.ToString(), Game.CueTeam);
+            }
+
+            StateHasChanged();
+        }
+        catch (JSException ex)
+        {
+            Logger.LogDebug(ex, "Comando al lettore non riuscito.");
+        }
+        catch (JSDisconnectedException)
+        {
+            // Pagina chiusa nel frattempo.
+        }
+    }
+
+    [JSInvokable]
+    public void OnEnded(int seq) => Game.ReportEnded(seq);
+
+    [JSInvokable]
+    public void OnPlayerError(int seq, string message) => Game.ReportError(seq, message);
+
+    [JSInvokable]
+    public void OnAudioState(bool ready)
+    {
+        if (audioReady == ready)
+            return;
+
+        audioReady = ready;
+        Game.SetOutput(id, Name, ready);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Game.OnChange -= OnGameChange;
+        Game.RemoveOutput(id);
+
+        if (attached)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("sarabanda.detach");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Pagina già chiusa.
+            }
+        }
+
+        selfReference?.Dispose();
+    }
+}

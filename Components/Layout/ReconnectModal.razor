@@ -1,0 +1,37 @@
+<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+
+@*
+    Finestra che compare se il browser perde il collegamento col server.
+    La partita vive nel server: appena il collegamento torna, la pagina
+    riprende da dove era, senza perdere niente.
+*@
+
+<dialog id="components-reconnect-modal" data-nosnippet>
+    <div class="components-reconnect-container">
+        <div class="components-rejoining-animation" aria-hidden="true">
+            <div></div>
+            <div></div>
+        </div>
+        <p class="components-reconnect-first-attempt-visible">
+            Collegamento al server…
+        </p>
+        <p class="components-reconnect-repeated-attempt-visible">
+            Riprovo tra <span id="components-seconds-to-next-attempt"></span> secondi.
+        </p>
+        <p class="components-reconnect-failed-visible">
+            Collegamento non riuscito.<br />Riprova o ricarica la pagina.
+        </p>
+        <button id="components-reconnect-button" class="components-reconnect-failed-visible">
+            Riprova
+        </button>
+        <p class="components-pause-visible">
+            La sessione è stata messa in pausa dal server.
+        </p>
+        <p class="components-resume-failed-visible">
+            Non riesco a riprendere la sessione.<br />Riprova o ricarica la pagina.
+        </p>
+        <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible">
+            Riprendi
+        </button>
+    </div>
+</dialog>

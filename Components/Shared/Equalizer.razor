@@ -1,0 +1,22 @@
+@*
+    Le barre dell'equalizzatore, a colori neon. Ballano quando la musica suona e
+    restano basse e ferme quando è in pausa. Nessuna immagine: solo CSS.
+*@
+
+<div class="eq @(Playing ? "playing" : "still")" style="--h:@Height" aria-hidden="true">
+    @for (int i = 0; i < Bars; i++)
+    {
+        <span style="--i:@i; --d:@((((i * 7) % 11) / 10.0 + .45).ToString(System.Globalization.CultureInfo.InvariantCulture))s; --c:@(i % 4)"></span>
+    }
+</div>
+
+@code {
+    /// <summary>Quante barre.</summary>
+    [Parameter] public int Bars { get; set; } = 16;
+
+    /// <summary>Altezza massima delle barre, in qualsiasi unità CSS.</summary>
+    [Parameter] public string Height { get; set; } = "6rem";
+
+    /// <summary>Se le barre ballano.</summary>
+    [Parameter] public bool Playing { get; set; } = true;
+}

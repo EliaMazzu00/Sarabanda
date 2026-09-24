@@ -1,0 +1,241 @@
+/* ==========================================================================
+   Pulsante della squadra: un bottone enorme, il colore della squadra, niente altro.
+   ========================================================================== */
+
+.remote {
+    --team: var(--c-pink);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-4);
+    background:
+        radial-gradient(ellipse 90% 60% at 50% 45%, color-mix(in srgb, var(--team) 18%, transparent) 0%, transparent 70%),
+        var(--bg-spotlight);
+    text-align: center;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ---- Scelta della squadra ---- */
+.choose h1 {
+    margin: var(--s-5) 0 0;
+    font-size: 1.8rem;
+}
+
+.choose-sub {
+    margin: 0;
+    color: var(--c-text-dim);
+    line-height: 1.5;
+}
+
+.team-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    width: min(100%, 24rem);
+}
+
+.team-option {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 1rem 1.2rem;
+    border: 2px solid var(--team);
+    border-radius: var(--r-lg);
+    background: color-mix(in srgb, var(--team) 14%, var(--c-surface));
+    color: var(--c-text);
+    font-size: 1.35rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.team-dot {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: .5rem;
+    border-radius: 50%;
+    background: var(--team);
+    box-shadow: 0 0 10px var(--team);
+    vertical-align: middle;
+}
+
+/* ---- Testata ---- */
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--c-border-soft);
+}
+
+.head-team {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.head-score {
+    color: var(--team);
+    font-family: var(--f-board);
+    font-size: 1.2rem;
+}
+
+.middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-4);
+    width: 100%;
+}
+
+/* ---- Il pulsante ---- */
+.buzzer {
+    display: grid;
+    place-items: center;
+    width: min(78vw, 22rem);
+    aspect-ratio: 1;
+    border: 0;
+    border-radius: 50%;
+    color: #0d0520;
+    font-family: var(--f-board);
+    touch-action: manipulation;
+}
+
+.buzzer-text {
+    font-size: clamp(2rem, 11vw, 3.4rem);
+    line-height: 1.05;
+}
+
+.buzzer-text.small {
+    color: var(--c-text-dim);
+    font-family: var(--f-ui);
+    font-size: clamp(1.1rem, 5.5vw, 1.6rem);
+    font-weight: 800;
+}
+
+.buzzer.armed {
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--team) 55%, #fff) 0%, var(--team) 45%, color-mix(in srgb, var(--team) 70%, #000) 100%);
+    box-shadow: 0 12px 0 color-mix(in srgb, var(--team) 55%, #000), 0 0 60px color-mix(in srgb, var(--team) 70%, transparent);
+    cursor: pointer;
+    animation: breathe 1.2s ease-in-out infinite;
+}
+
+.buzzer.armed:active {
+    transform: translateY(10px);
+    box-shadow: 0 2px 0 color-mix(in srgb, var(--team) 55%, #000), 0 0 90px var(--team);
+}
+
+@keyframes breathe {
+    50% {
+        box-shadow: 0 12px 0 color-mix(in srgb, var(--team) 55%, #000), 0 0 110px var(--team);
+    }
+}
+
+.buzzer.mine {
+    background: var(--team);
+    box-shadow: 0 0 120px var(--team);
+    animation: pop .4s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+
+@keyframes pop {
+    from {
+        transform: scale(.7);
+    }
+
+    to {
+        transform: none;
+    }
+}
+
+.buzzer.off {
+    border: 3px dashed var(--c-border);
+    background: rgba(0, 0, 0, .3);
+}
+
+.buzzer.off[style*="--other"] {
+    border: 4px solid var(--other);
+}
+
+.hint {
+    margin: 0;
+    color: var(--c-text-dim);
+    font-size: 1.05rem;
+}
+
+.hint.strong {
+    color: var(--c-text);
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.flash {
+    margin: 0;
+    padding: .5rem 1rem;
+    border-radius: var(--r-md);
+    background: rgba(255, 77, 109, .15);
+    color: var(--c-red-soft);
+    font-weight: 700;
+}
+
+/* ---- Titolo svelato ---- */
+.reveal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+}
+
+.reveal-label {
+    color: var(--c-text-faint);
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.reveal-title {
+    color: var(--c-yellow);
+    font-family: var(--f-board);
+    font-size: 2rem;
+    line-height: 1.1;
+}
+
+.reveal-artist {
+    color: var(--c-cyan-soft);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.reveal-winner {
+    margin-top: var(--s-3);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.waiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-3);
+}
+
+/* ---- Piede ---- */
+.foot {
+    padding-bottom: var(--s-2);
+}
+
+.change {
+    padding: .4rem .9rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-pill);
+    background: transparent;
+    color: var(--c-text-faint);
+    font-size: .85rem;
+    cursor: pointer;
+}

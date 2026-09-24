@@ -1,0 +1,854 @@
+@page "/admin"
+@layout BareLayout
+@implements IAsyncDisposable
+@inject GameService Game
+@inject IJSRuntime JS
+@inject IConfiguration Config
+@inject ILogger<Admin> Logger
+
+@*
+    Il pannello di regia: si preparano squadre e canzoni, si fa suonare la musica,
+    si giudicano le risposte. A differenza dello schermo, mostra il titolo.
+*@
+
+<PageTitle>Regia — Sarabanda</PageTitle>
+
+<PlayerHost Page="AudioOutput.Admin" Name="Regia" ShowHint="true" />
+
+<div class="admin">
+
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-icon" aria-hidden="true">🎵</span>
+            <span class="brand-text">Regia</span>
+            <span class="brand-sub">Sarabanda</span>
+        </div>
+
+        <div class="topbar-right">
+            @if (Game.IsActive)
+            {
+                <span class="progress">Canzone <strong>@Game.SongNumber</strong></span>
+            }
+            <span class="status status-@Game.Status.ToString().ToLowerInvariant()">@StatusLabel</span>
+
+            <a class="topbar-link" href="/display" target="_blank" rel="noopener">Schermo ↗</a>
+            <a class="topbar-link" href="/remote" target="_blank" rel="noopener">Pulsante ↗</a>
+
+            <button class="topbar-link as-button" @onclick="() => showShortcuts = !showShortcuts">
+                ⌨ Scorciatoie
+            </button>
+        </div>
+    </header>
+
+    @if (showShortcuts)
+    {
+        <div class="shortcuts" role="note">
+            <div class="shortcuts-title">Scorciatoie da tastiera</div>
+            <ul>
+                <li><kbd>Invio</kbd> il <strong>prossimo passo</strong> (il bottone grande)</li>
+                <li><kbd>Spazio</kbd> fai suonare / metti in pausa</li>
+                <li><kbd>1</kbd>–<kbd>8</kbd> prenota quella squadra (se si prenotano a voce)</li>
+                <li><kbd>G</kbd> risposta giusta &nbsp; <kbd>S</kbd> risposta sbagliata</li>
+                <li><kbd>R</kbd> svela il titolo &nbsp; <kbd>N</kbd> prossima canzone</li>
+            </ul>
+            <div class="shortcuts-note">Non valgono mentre stai scrivendo in un campo di testo.</div>
+        </div>
+    }
+
+    <div class="grid">
+
+        <!-- ================= PREPARAZIONE ================= -->
+        <section class="panel">
+            <h2>Preparazione</h2>
+
+            <!-- ---- Squadre ---- -->
+            <details class="block" open>
+                <summary>Squadre</summary>
+                <div class="block-body">
+                    <div class="field inline">
+                        <label for="teams">Quante squadre</label>
+                        <input id="teams" type="number" min="1" max="@GameService.MaxTeams" value="@Game.Teams.Count"
+                               @onchange="OnTeamCountChange" />
+                    </div>
+
+                    <ul class="team-setup">
+                        @foreach (var team in Game.Teams)
+                        {
+                            var index = team.Index;
+                            <li style="--team:@team.Color">
+                                <span class="team-dot" aria-hidden="true"></span>
+                                <input type="text" maxlength="24" value="@team.Name" aria-label="Nome della squadra @team.Number"
+                                       @onchange="e => Game.SetTeamName(index, e.Value?.ToString())" />
+                                <code class="team-link" title="Indirizzo del pulsante di questa squadra">/remote?squadra=@team.Number</code>
+                            </li>
+                        }
+                    </ul>
+                    <p class="hint">
+                        Ogni squadra apre sul telefono <code>@RemoteBase</code> e tocca il proprio nome,
+                        oppure va dritta all'indirizzo accanto. Si può giocare anche senza telefoni:
+                        le squadre gridano e tu premi il loro numero.
+                    </p>
+                </div>
+            </details>
+
+            <!-- ---- Audio ---- -->
+            <details class="block" open>
+                <summary>Da dove esce la musica</summary>
+                <div class="block-body">
+                    <div class="radios">
+                        <label class="radio">
+                            <input type="radio" name="output" checked="@(cfgOutput == AudioOutput.Display)"
+                                   @onchange="() => SetOutput(AudioOutput.Display)" />
+                            <span>📺 Schermo</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="output" checked="@(cfgOutput == AudioOutput.Admin)"
+                                   @onchange="() => SetOutput(AudioOutput.Admin)" />
+                            <span>🎛️ Regia</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="output" checked="@(cfgOutput == AudioOutput.Both)"
+                                   @onchange="() => SetOutput(AudioOutput.Both)" />
+                            <span>Tutti e due</span>
+                        </label>
+                    </div>
+
+                    <ul class="outputs">
+                        @foreach (var line in OutputStatus)
+                        {
+                            <li class="@line.Css">@line.Text</li>
+                        }
+                    </ul>
+                </div>
+            </details>
+
+            <!-- ---- Regole ---- -->
+            <details class="block" open>
+                <summary>Regole e punti</summary>
+                <div class="block-body">
+                    <p class="hint top">Valgono subito, anche a canzone in corso.</p>
+
+                    <div class="field-grid">
+                        <div class="field">
+                            <label for="pts">Punti a chi indovina</label>
+                            <input id="pts" type="number" min="0" max="1000" @bind="cfgPoints" @bind:after="ApplyConfig" />
+                        </div>
+                        <div class="field">
+                            <label for="pen">Punti tolti a chi sbaglia</label>
+                            <input id="pen" type="number" min="0" max="1000" @bind="cfgPenalty" @bind:after="ApplyConfig" />
+                        </div>
+                        <div class="field">
+                            <label for="ans">Secondi per rispondere</label>
+                            <input id="ans" type="number" min="0" max="120" @bind="cfgAnswer" @bind:after="ApplyConfig" />
+                        </div>
+                        <div class="field">
+                            <label for="listen">Secondi di ascolto</label>
+                            <input id="listen" type="number" min="0" max="900" @bind="cfgListen" @bind:after="ApplyConfig" />
+                        </div>
+                    </div>
+                    <p class="hint">
+                        <strong>0</strong> vuol dire "senza limite": nessun conto alla rovescia per rispondere,
+                        oppure la canzone intera. Il tempo per rispondere è solo un conto alla rovescia
+                        sullo schermo: il giudizio resta tuo.
+                    </p>
+
+                    <div class="subhead">Da che punto parte un brano audio</div>
+                    <div class="radios">
+                        <label class="radio">
+                            <input type="radio" name="start" checked="@(cfgStart == StartMode.Beginning)"
+                                   @onchange="() => SetStart(StartMode.Beginning)" />
+                            <span>Dall'inizio</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="start" checked="@(cfgStart == StartMode.Fixed)"
+                                   @onchange="() => SetStart(StartMode.Fixed)" />
+                            <span>Da un secondo preciso</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="start" checked="@(cfgStart == StartMode.Random)"
+                                   @onchange="() => SetStart(StartMode.Random)" />
+                            <span>Da un punto a caso</span>
+                        </label>
+                    </div>
+                    @if (cfgStart == StartMode.Fixed)
+                    {
+                        <div class="field inline">
+                            <label for="startsec">Parti dal secondo</label>
+                            <input id="startsec" type="number" min="0" max="3600" @bind="cfgStartSeconds" @bind:after="ApplyConfig" />
+                        </div>
+                        <p class="hint">Per saltare l'introduzione: 30 secondi di solito portano dentro la strofa.</p>
+                    }
+                    else if (cfgStart == StartMode.Random)
+                    {
+                        <p class="hint">Più difficile: un punto qualsiasi del brano, ma mai così vicino alla fine da non riuscire ad ascoltarlo.</p>
+                    }
+
+                    <div class="subhead">Melodie al pianoforte</div>
+                    <div class="field inline">
+                        <label for="notes">Quante note far sentire</label>
+                        <input id="notes" type="number" min="0" max="200" @bind="cfgNotes" @bind:after="ApplyConfig" />
+                    </div>
+                    <p class="hint">Il gioco delle <strong>sette note</strong>: scrivi 7. Con <strong>0</strong> la melodia si sente tutta. In gioco puoi aggiungere note una coppia alla volta.</p>
+
+                    <div class="subhead">Svolgimento</div>
+                    <label class="check">
+                        <input type="checkbox" @bind="cfgResume" @bind:after="ApplyConfig" />
+                        <span>Dopo una risposta sbagliata la musica riparte da sola</span>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" @bind="cfgPlayOnReveal" @bind:after="ApplyConfig" />
+                        <span>Quando si svela il titolo, la canzone continua a suonare</span>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" @bind="cfgShuffle" @bind:after="ApplyConfig" />
+                        <span>Canzoni in ordine casuale</span>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" @bind="cfgShowPlaylist" @bind:after="ApplyConfig" />
+                        <span>Mostra sullo schermo la playlist (un piccolo aiuto)</span>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" @bind="cfgSounds" @bind:after="ApplyConfig" />
+                        <span>Effetti sonori (campanello, giusto, sbagliato)</span>
+                    </label>
+                </div>
+            </details>
+
+            <!-- ---- Canzoni ---- -->
+            <details class="block" open>
+                <summary>Canzoni</summary>
+                <div class="block-body">
+                    <div class="themes-head">
+                        <label>Playlist</label>
+                        <span class="themes-actions">
+                            <button class="btn-mini" @onclick="SelectAll">tutte</button>
+                            <button class="btn-mini" @onclick="SelectNone">nessuna</button>
+                        </span>
+                    </div>
+
+                    <div class="themes">
+                        @foreach (var playlist in Game.Playlists)
+                        {
+                            <label class="theme @(Game.SelectedPlaylists.Contains(playlist.Id) ? "on" : "")">
+                                <input type="checkbox" checked="@Game.SelectedPlaylists.Contains(playlist.Id)"
+                                       @onchange="e => TogglePlaylist(playlist.Id, e)" />
+                                <span class="theme-kind" title="@(playlist.Kind == SongKind.Audio ? "Brani audio" : "Melodie al pianoforte")">
+                                    @(playlist.Kind == SongKind.Audio ? "🎵" : "🎹")
+                                </span>
+                                <span class="theme-name">@playlist.Name</span>
+                                <span class="theme-count">@playlist.Count</span>
+                            </label>
+                        }
+                    </div>
+
+                    @if (!Game.Playlists.Any(p => p.Kind == SongKind.Audio))
+                    {
+                        <p class="hint notice">
+                            Nessun brano audio ancora: per ora si gioca con le <strong>melodie al pianoforte</strong> incluse.
+                            Per le canzoni vere caricale qui sotto o mettile nella cartella indicata.
+                        </p>
+                    }
+
+                    <div class="upload">
+                        <div class="subhead">Aggiungi le tue canzoni</div>
+                        <InputFile OnChange="OnUpload" multiple accept="@AcceptList" />
+                        <p class="hint">
+                            Nomina i file <code>Artista - Titolo.mp3</code>: il nome è la risposta.
+                            Oppure copiali in <code class="path">@Game.AudioFolder</code> (una sottocartella per
+                            ogni playlist) e premi
+                            <button class="btn-mini" @onclick="Reload">🔄 Rileggi la cartella</button>
+                        </p>
+                        @if (uploadMessage is not null)
+                        {
+                            <p class="message">@uploadMessage</p>
+                        }
+                    </div>
+
+                    @if (Game.RejectedMelodies.Count > 0)
+                    {
+                        <details class="rejected">
+                            <summary>@Game.RejectedMelodies.Count melodie scartate</summary>
+                            <ul>
+                                @foreach (var line in Game.RejectedMelodies)
+                                {
+                                    <li>@line</li>
+                                }
+                            </ul>
+                        </details>
+                    }
+
+                    <div class="badges">
+                        <span class="badge ok">@Game.RemainingCount da giocare</span>
+                        @if (Game.PlayedCount > 0)
+                        {
+                            <span class="badge">@Game.PlayedCount già giocate</span>
+                            <button class="btn-mini" @onclick="Game.ResetPlayed">ricomincia il giro</button>
+                        }
+                    </div>
+                </div>
+            </details>
+
+            @if (Game.SongCount > 0)
+            {
+                <details class="block">
+                    <summary>Elenco delle canzoni <span class="spoiler">contiene i titoli</span></summary>
+                    <div class="block-body">
+                        <p class="hint top">Premi ▶ per preparare una canzone precisa.</p>
+                        <ul class="song-list">
+                            @for (int i = 0; i < Game.Loaded.Count; i++)
+                            {
+                                var index = i;
+                                var song = Game.Loaded[index];
+                                <li class="@(Game.WasPlayed(index) ? "played" : "") @(index == Game.CurrentIndex && Game.IsActive ? "current" : "")">
+                                    <button class="play-one" title="Prepara questa canzone" @onclick="() => Game.StartAt(index)">▶</button>
+                                    <span class="song-kind">@(song.Kind == SongKind.Audio ? "🎵" : "🎹")</span>
+                                    <span class="song-title">@song.Title</span>
+                                    <span class="song-artist">@song.Artist</span>
+                                    @if (Game.WasPlayed(index))
+                                    {
+                                        <span class="played-mark" title="Già giocata">✓</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </details>
+            }
+        </section>
+
+        <!-- ================= CONDUZIONE ================= -->
+        <section class="panel play">
+
+            <ol class="stepper" aria-label="Fasi della canzone">
+                @foreach (var (label, phase) in Steps)
+                {
+                    <li class="@StepClass(phase)">@label</li>
+                }
+            </ol>
+
+            <div class="next">
+                <div class="next-text">
+                    <div class="next-title">@Primary.Title</div>
+                    <div class="next-hint">@Primary.Hint</div>
+                </div>
+                @if (Primary.Action is not null)
+                {
+                    <button class="btn btn-go" @onclick="Primary.Action">
+                        @Primary.Button <kbd>Invio</kbd>
+                    </button>
+                }
+            </div>
+
+            @if (Game.IsActive && Game.CurrentSong is { } current)
+            {
+                <!-- ---- La canzone: titolo e comandi della musica ---- -->
+                <div class="now-card">
+                    <div class="now-head">
+                        <span class="now-kind">@(current.Kind == SongKind.Audio ? "🎵 Brano audio" : "🎹 Melodia")</span>
+                        <span class="now-playlist">@current.Playlist</span>
+                    </div>
+                    <div class="now-title">@current.Title</div>
+                    @if (current.Artist.Length > 0)
+                    {
+                        <div class="now-artist">@current.Artist</div>
+                    }
+
+                    <div class="transport">
+                        @if (Game.IsPlaying)
+                        {
+                            <button class="btn btn-secondary" @onclick="Game.Pause">⏸ Pausa <kbd>Spazio</kbd></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-play" disabled="@(Game.Status == GameStatus.Buzzed)" @onclick="Game.Play">
+                                ▶ @(Game.Status == GameStatus.Ready ? "Fai partire" : Game.ListenOver ? "Da capo" : "Riprendi") <kbd>Spazio</kbd>
+                            </button>
+                        }
+                        @if (!Game.ListenOver)
+                        {
+                            <button class="btn btn-secondary" disabled="@(Game.Status is not (GameStatus.Listening or GameStatus.Revealed))"
+                                    @onclick="Game.Replay" title="Riparte dall'inizio">↻ Da capo</button>
+                        }
+                        @if (current.Kind == SongKind.Melody && Game.NoteLimit > 0)
+                        {
+                            <button class="btn btn-secondary" disabled="@(Game.Status == GameStatus.Buzzed)" @onclick="() => Game.MoreNotes()"
+                                    title="Fa sentire due note in più, da capo">➕ 2 note (ora @Game.NoteLimit)</button>
+                        }
+
+                        <span class="clock">
+                            @Format(Game.Listened)@(Game.ListenLimit is { } limit ? $" / {Format(limit)}" : "")
+                        </span>
+                    </div>
+
+                    @if (Game.ListenFraction is { } fraction)
+                    {
+                        <span class="meter"><span class="meter-fill" style="width:@((int)(fraction * 100))%"></span></span>
+                    }
+
+                    @if (Game.PlayerError is { } error)
+                    {
+                        <p class="player-error">⚠ @error</p>
+                    }
+                </div>
+
+                <!-- ---- Prenotazioni e giudizio ---- -->
+                @if (Game.Status == GameStatus.Buzzed && Game.BuzzedTeam is { } buzzed)
+                {
+                    var team = Game.Teams[buzzed];
+                    <div class="judge" style="--team:@team.Color">
+                        <div class="judge-title">
+                            <span class="team-dot"></span> <strong>@team.Name</strong> ha prenotato
+                            @if (Game.AnswerRemaining is { } left)
+                            {
+                                <span class="judge-clock @(left == 0 ? "over" : "")">@(left == 0 ? "tempo scaduto" : $"{left} s")</span>
+                            }
+                        </div>
+                        <div class="judge-buttons">
+                            <button class="btn btn-right" @onclick="Game.JudgeCorrect">
+                                ✓ Giusto @(Game.PointsCorrect > 0 ? $"(+{Game.PointsCorrect})" : "") <kbd>G</kbd>
+                            </button>
+                            <button class="btn btn-wrong" @onclick="Game.JudgeWrong">
+                                ✗ Sbagliato @(Game.PenaltyWrong > 0 ? $"(−{Game.PenaltyWrong})" : "") <kbd>S</kbd>
+                            </button>
+                        </div>
+                        <button class="btn-mini" @onclick="Game.CancelBuzz">annulla la prenotazione (partita per sbaglio)</button>
+                    </div>
+                }
+                else if (Game.Status is GameStatus.Listening or GameStatus.Ready)
+                {
+                    <div class="manual-buzz">
+                        <div class="subhead">Prenota a mano <span class="subhead-note">se le squadre si prenotano a voce</span></div>
+                        <div class="buzz-buttons">
+                            @foreach (var team in Game.Teams)
+                            {
+                                var index = team.Index;
+                                <button class="buzz-btn" style="--team:@team.Color"
+                                        disabled="@(Game.Status != GameStatus.Listening || Game.IsLocked(index))"
+                                        @onclick="() => Game.Buzz(index)">
+                                    <kbd>@team.Number</kbd> @team.Name
+                                    @if (Game.IsLocked(index))
+                                    {
+                                        <span class="buzz-out">fuori</span>
+                                    }
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="controls">
+                    <button class="btn btn-reveal" disabled="@(Game.Status == GameStatus.Revealed)" @onclick="Game.Reveal">👁 Svela il titolo <kbd>R</kbd></button>
+                    <button class="btn btn-secondary" disabled="@(Game.SongCount == 0)" @onclick="Game.StartNext">⏭ Prossima canzone <kbd>N</kbd></button>
+                    <button class="btn btn-reset" @onclick="Game.Reset" title="Lo schermo torna in attesa, i punti restano">⏏ Togli dallo schermo</button>
+                </div>
+            }
+
+            <!-- ---------------- Punteggi ---------------- -->
+            <div class="scores-head">
+                <h3>Punteggi</h3>
+                <button class="btn-mini" @onclick="Game.ResetScores">azzera tutti</button>
+            </div>
+
+            <div class="scoreboard">
+                @foreach (var team in Game.Teams.OrderByDescending(t => t.Score).ThenBy(t => t.Index))
+                {
+                    var index = team.Index;
+                    <div class="score-row" style="--team:@team.Color">
+                        <span class="team-dot"></span>
+                        <span class="score-name">@team.Name</span>
+                        <span class="score-value">@team.Score</span>
+                        <span class="score-buttons">
+                            <button class="plus" @onclick="() => Game.AddScore(index, 1)">+1</button>
+                            <button class="minus" @onclick="() => Game.AddScore(index, -1)">−1</button>
+                        </span>
+                    </div>
+                }
+            </div>
+
+            <!-- ---------------- Storico ---------------- -->
+            <div class="scores-head">
+                <h3>Canzoni giocate</h3>
+                @if (Game.History.Count > 0)
+                {
+                    <button class="btn-mini" @onclick="Game.ClearHistory">svuota</button>
+                }
+            </div>
+            @if (Game.History.Count == 0)
+            {
+                <p class="hint">Qui compaiono le canzoni giocate e chi le ha indovinate.</p>
+            }
+            else
+            {
+                <ol class="history">
+                    @foreach (var record in Game.History)
+                    {
+                        <li>
+                            <span class="history-title">@record.Title</span>
+                            @if (record.Winner is { } winner)
+                            {
+                                <span class="history-winner" style="--team:@record.WinnerColor">@winner</span>
+                            }
+                            else
+                            {
+                                <span class="history-none">nessuno</span>
+                            }
+                        </li>
+                    }
+                </ol>
+            }
+        </section>
+    </div>
+</div>
+
+@code {
+    // ---- Configurazione in modifica: si applica a ogni cambiamento ----
+    private int cfgPoints;
+    private int cfgPenalty;
+    private int cfgAnswer;
+    private int cfgListen;
+    private StartMode cfgStart;
+    private int cfgStartSeconds;
+    private bool cfgResume;
+    private bool cfgPlayOnReveal;
+    private int cfgNotes;
+    private bool cfgShuffle;
+    private bool cfgShowPlaylist;
+    private bool cfgSounds;
+    private AudioOutput cfgOutput;
+
+    private bool showShortcuts;
+    private string? uploadMessage;
+    private string RemoteBase = "/remote";
+
+    private IJSObjectReference? shortcutsModule;
+    private DotNetObjectReference<Admin>? selfReference;
+
+    private static readonly string AcceptList = string.Join(",", SongLibrary.AudioExtensions) + ",audio/*";
+
+    private string StatusLabel => Game.Status switch
+    {
+        GameStatus.Idle => "Pronto",
+        GameStatus.Ready => "Canzone pronta",
+        GameStatus.Listening => Game.IsPlaying ? "In ascolto" : "In pausa",
+        GameStatus.Buzzed => "Prenotazione",
+        GameStatus.Revealed => "Svelata",
+        _ => ""
+    };
+
+    private static readonly (string Label, GameStatus Phase)[] Steps =
+    {
+        ("1 · Pronti", GameStatus.Ready),
+        ("2 · Ascolto", GameStatus.Listening),
+        ("3 · Risposta", GameStatus.Buzzed),
+        ("4 · Titolo", GameStatus.Revealed),
+    };
+
+    private string StepClass(GameStatus phase) =>
+        Game.Status == phase ? "now" : Game.Status > phase ? "done" : "";
+
+    protected override void OnInitialized()
+    {
+        cfgPoints = Game.PointsCorrect;
+        cfgPenalty = Game.PenaltyWrong;
+        cfgAnswer = Game.AnswerSeconds;
+        cfgListen = Game.MaxListenSeconds;
+        cfgStart = Game.StartFrom;
+        cfgStartSeconds = Game.StartSeconds;
+        cfgResume = Game.ResumeAfterWrong;
+        cfgPlayOnReveal = Game.PlayOnReveal;
+        cfgNotes = Game.MelodyNotes;
+        cfgShuffle = Game.Shuffle;
+        cfgShowPlaylist = Game.ShowPlaylist;
+        cfgSounds = Game.Sounds;
+        cfgOutput = Game.Output;
+
+        var addresses = NetworkInfo.GetLanAddresses();
+        if (addresses.Count > 0)
+            RemoteBase = $"http://{addresses[0]}:{Config.GetValue("Server:Port", 5110)}/remote";
+
+        Game.OnChange += OnGameChange;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        try
+        {
+            shortcutsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./Components/Pages/Admin.razor.js");
+
+            selfReference = DotNetObjectReference.Create(this);
+            await shortcutsModule.InvokeVoidAsync("registerShortcuts", selfReference);
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Scorciatoie da tastiera non attivate: modulo non caricato.");
+            shortcutsModule = null;
+        }
+    }
+
+    private void OnGameChange() => InvokeAsync(StateHasChanged);
+
+    private static string Format(double seconds)
+    {
+        int total = (int)Math.Floor(Math.Max(0, seconds));
+        return $"{total / 60}:{total % 60:00}";
+    }
+
+    // ============================================================
+    //  Il prossimo passo
+    // ============================================================
+
+    private readonly record struct NextStep(string Title, string Hint, string Button, Action? Action);
+
+    private NextStep Primary => Game.Status switch
+    {
+        GameStatus.Idle when Game.SongCount == 0 => new(
+            "Nessuna canzone in gioco",
+            "Spunta almeno una playlist qui a sinistra, oppure carica le tue canzoni.",
+            "", null),
+
+        GameStatus.Idle => new(
+            "Tutto pronto",
+            $"Apri lo Schermo sulla TV (e cliccaci una volta, per l'audio), poi prepara la prima canzone. {Game.RemainingCount} da giocare.",
+            "▶ Prepara la canzone", Game.StartNext),
+
+        GameStatus.Ready => new(
+            $"Canzone n. {Game.SongNumber} pronta",
+            "Sullo schermo c'è \"Pronti?\". Quando le squadre sono pronte, fai partire la musica: da lì possono prenotarsi.",
+            "▶ Fai partire la musica", Game.Play),
+
+        GameStatus.Listening when !Game.AnyoneCanBuzz => new(
+            "Hanno sbagliato tutti",
+            "Nessuna squadra può più prenotarsi: svela il titolo.",
+            "👁 Svela il titolo", Game.Reveal),
+
+        GameStatus.Listening when Game.IsPlaying => new(
+            "Si ascolta…",
+            "Aspetta una prenotazione dai telefoni, oppure premi il numero della squadra che grida per prima. Se nessuno la indovina, svela il titolo.",
+            "", null),
+
+        GameStatus.Listening when Game.ListenOver => new(
+            "Ascolto finito",
+            "Le prenotazioni sono ancora aperte. Dai qualche secondo, poi svela il titolo (o fai ripartire la musica da capo).",
+            "👁 Svela il titolo", Game.Reveal),
+
+        GameStatus.Listening => new(
+            "Musica in pausa",
+            "Le prenotazioni restano aperte. Riprendi la musica quando vuoi.",
+            "▶ Riprendi la musica", Game.Play),
+
+        GameStatus.Buzzed => new(
+            "Prenotazione!",
+            "Ascolta la risposta e giudica qui sotto: Giusto (G) o Sbagliato (S).",
+            "", null),
+
+        GameStatus.Revealed => new(
+            Game.Winner is { } w ? $"Indovinata da {Game.Teams[w].Name}" : "Titolo svelato",
+            Game.RemainingCount > 0
+                ? $"Quando volete, passate alla prossima: ne restano {Game.RemainingCount}."
+                : "Le avete giocate tutte: la prossima ricomincia il giro.",
+            "⏭ Prossima canzone", Game.StartNext),
+
+        _ => new("", "", "", null)
+    };
+
+    // ============================================================
+    //  Stato dei lettori
+    // ============================================================
+
+    private readonly record struct StatusLine(string Text, string Css);
+
+    private IEnumerable<StatusLine> OutputStatus
+    {
+        get
+        {
+            var outputs = Game.Outputs.ToList();
+            var displays = outputs.Where(o => o.Name == "Schermo").ToList();
+            var admins = outputs.Where(o => o.Name == "Regia").ToList();
+
+            if (Game.PlaysOn(AudioOutput.Display))
+            {
+                if (displays.Count == 0)
+                    yield return new("📺 Nessuno schermo aperto: apri /display sulla TV.", "warn");
+                else if (displays.Any(d => d.AudioReady))
+                    yield return new($"📺 Schermo collegato, audio attivo{(displays.Count > 1 ? $" ({displays.Count} schermi aperti)" : "")}.", "ok");
+                else
+                    yield return new("📺 Schermo collegato ma audio non ancora attivo: clicca una volta sulla pagina dello schermo.", "warn");
+            }
+
+            if (Game.PlaysOn(AudioOutput.Admin))
+            {
+                if (admins.Any(a => a.AudioReady))
+                    yield return new("🎛️ Regia: audio attivo.", "ok");
+                else
+                    yield return new("🎛️ Regia: audio non ancora attivo, clicca un punto qualsiasi di questa pagina.", "warn");
+            }
+        }
+    }
+
+    // ============================================================
+    //  Configurazione
+    // ============================================================
+
+    private void SetOutput(AudioOutput output)
+    {
+        cfgOutput = output;
+        ApplyConfig();
+    }
+
+    private void SetStart(StartMode mode)
+    {
+        cfgStart = mode;
+        ApplyConfig();
+    }
+
+    private void ApplyConfig()
+    {
+        Game.Configure(cfgPoints, cfgPenalty, cfgAnswer, cfgListen, cfgStart, cfgStartSeconds,
+                       cfgResume, cfgPlayOnReveal, cfgNotes, cfgShuffle, cfgShowPlaylist, cfgSounds, cfgOutput);
+
+        // Rileggo i valori normalizzati dal servizio (limiti min/max).
+        cfgPoints = Game.PointsCorrect;
+        cfgPenalty = Game.PenaltyWrong;
+        cfgAnswer = Game.AnswerSeconds;
+        cfgListen = Game.MaxListenSeconds;
+        cfgStartSeconds = Game.StartSeconds;
+        cfgNotes = Game.MelodyNotes;
+    }
+
+    private void OnTeamCountChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var count))
+            Game.SetTeamCount(count);
+    }
+
+    // ============================================================
+    //  Canzoni
+    // ============================================================
+
+    private void TogglePlaylist(string id, ChangeEventArgs e)
+    {
+        var selected = new HashSet<string>(Game.SelectedPlaylists, StringComparer.OrdinalIgnoreCase);
+        if (e.Value is true)
+            selected.Add(id);
+        else
+            selected.Remove(id);
+
+        Game.UsePlaylists(selected);
+    }
+
+    private void SelectAll() => Game.UsePlaylists(Game.Playlists.Select(p => p.Id));
+
+    private void SelectNone() => Game.UsePlaylists(Array.Empty<string>());
+
+    private void Reload()
+    {
+        Game.ReloadLibrary();
+        uploadMessage = $"Cartella riletta: {Game.Playlists.Count(p => p.Kind == SongKind.Audio)} playlist audio, {Game.Playlists.Where(p => p.Kind == SongKind.Audio).Sum(p => p.Count)} brani.";
+    }
+
+    private async Task OnUpload(InputFileChangeEventArgs e)
+    {
+        const long maxSize = 200L * 1024 * 1024;
+        const int maxFiles = 200;
+
+        var files = e.GetMultipleFiles(maxFiles);
+        int saved = 0;
+        var problems = new List<string>();
+
+        foreach (var file in files)
+        {
+            uploadMessage = $"Caricamento {saved + problems.Count + 1} di {files.Count}: {file.Name}…";
+            StateHasChanged();
+
+            try
+            {
+                await using var stream = file.OpenReadStream(maxSize);
+                await Game.UploadAsync(file.Name, stream);
+                saved++;
+            }
+            catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException)
+            {
+                problems.Add($"{file.Name}: {ex.Message}");
+                Logger.LogWarning(ex, "Caricamento non riuscito: {File}", file.Name);
+            }
+        }
+
+        uploadMessage = saved switch
+        {
+            0 => "Nessun brano caricato.",
+            1 => "1 brano caricato nella playlist \"Caricate\".",
+            _ => $"{saved} brani caricati nella playlist \"Caricate\"."
+        };
+
+        if (problems.Count > 0)
+            uploadMessage += " Problemi: " + string.Join("; ", problems);
+    }
+
+    // ============================================================
+    //  Scorciatoie da tastiera
+    // ============================================================
+
+    /// <summary>Riceve un tasto dal modulo JavaScript (mai mentre si scrive in un campo).</summary>
+    [JSInvokable]
+    public void OnShortcut(string key)
+    {
+        switch (key)
+        {
+            case "Enter":
+                Primary.Action?.Invoke();
+                break;
+
+            case " ":
+                if (Game.IsPlaying)
+                    Game.Pause();
+                else
+                    Game.Play();
+                break;
+
+            case "g" or "G":
+                Game.JudgeCorrect();
+                break;
+
+            case "s" or "S":
+                Game.JudgeWrong();
+                break;
+
+            case "r" or "R":
+                Game.Reveal();
+                break;
+
+            case "n" or "N":
+                Game.StartNext();
+                break;
+
+            default:
+                if (key.Length == 1 && char.IsDigit(key[0]))
+                    Game.Buzz(key[0] - '1');
+                break;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Game.OnChange -= OnGameChange;
+
+        if (shortcutsModule is not null)
+        {
+            try
+            {
+                await shortcutsModule.InvokeVoidAsync("unregisterShortcuts");
+                await shortcutsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // La pagina è già stata chiusa.
+            }
+        }
+
+        selfReference?.Dispose();
+    }
+}

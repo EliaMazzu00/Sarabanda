@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------
+#  Sarabanda — file da non versionare
+# ---------------------------------------------------------------
+
+# Output di compilazione e pubblicazione
+[Bb]in/
+[Oo]bj/
+publish-win-x64-self-contained/
+publish/
+*.binlog
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Pacchetti e cache di ripristino
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# File di sistema
+[Tt]humbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Log e dump
+*.log
+*.tmp
+*.pid
+*.seed
+*.core
+*.stackdump
+
+# Segreti locali: mai su GitHub.
+# appsettings.json e appsettings.Development.json sono versionati perche'
+# contengono solo configurazione pubblica (livelli di log, porta).
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+*.pfx
+*.pem
+*.key
+
+# Appunti di lavoro locali (non fanno parte del progetto)
+.claude/
+
+# Le canzoni sono dell'utente: mai su GitHub (tranne il LEGGIMI della cartella).
+canzoni/*
+!canzoni/LEGGIMI.txt

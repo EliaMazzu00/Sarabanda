@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Schermo di Sarabanda
+   --------------------------------------------------------------------------
+   Per una TV o un proiettore: misure in vmin/vh con clamp(), niente esce
+   dai bordi. Il colore della squadra prenotata (--team) colora il palco.
+   ========================================================================== */
+
+.display {
+    --team: var(--c-pink);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    padding: clamp(.8rem, 2.5vmin, 2rem) clamp(1rem, 3.5vmin, 3rem);
+    background: var(--bg-spotlight);
+}
+
+.display.status-buzzed {
+    background:
+        radial-gradient(ellipse 80% 70% at 50% 45%, color-mix(in srgb, var(--team) 38%, transparent) 0%, transparent 70%),
+        var(--bg-spotlight);
+}
+
+/* ---- Barra alta ---- */
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+}
+
+.brand {
+    font-family: var(--f-board);
+    font-size: clamp(1.1rem, 3.4vmin, 2.2rem);
+    letter-spacing: .02em;
+    background: linear-gradient(90deg, var(--c-pink), var(--c-yellow), var(--c-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.song-info {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+}
+
+.song-info span {
+    padding: .2em .8em;
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, .07);
+    color: var(--c-text-dim);
+    font-size: clamp(.8rem, 2vmin, 1.2rem);
+    font-weight: 600;
+}
+
+.song-info .song-number {
+    background: rgba(255, 63, 164, .18);
+    color: var(--c-pink-soft);
+}
+
+/* ---- Palco ---- */
+.stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.idle,
+.ready,
+.listening {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(.8rem, 3vmin, 2rem);
+    text-align: center;
+}
+
+.idle-title,
+.ready-title {
+    font-family: var(--f-board);
+    font-size: clamp(2.6rem, 11vmin, 7.5rem);
+    line-height: 1;
+    background: linear-gradient(90deg, var(--c-pink), var(--c-yellow), var(--c-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 18px rgba(255, 63, 164, .35));
+}
+
+.idle-sub,
+.ready-sub {
+    color: var(--c-text-dim);
+    font-size: clamp(1rem, 3vmin, 1.8rem);
+    letter-spacing: .06em;
+}
+
+.ready-sub {
+    animation: blink 1.4s ease-in-out infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: .45;
+    }
+}
+
+/* ---- Il disco ---- */
+.vinyl {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: clamp(9rem, 34vmin, 22rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .18) 0%, transparent 35%),
+        repeating-radial-gradient(circle, #151019 0 2px, #0a070d 2px 4px);
+    box-shadow: 0 0 0 3px #2b2233, var(--sh-lg), 0 0 60px rgba(255, 63, 164, .25);
+}
+
+.vinyl.big {
+    width: clamp(10rem, 40vmin, 26rem);
+}
+
+.vinyl.spinning {
+    animation: spin 2.2s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.vinyl-label {
+    display: grid;
+    place-items: center;
+    width: 36%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--c-bg-deep) 0 7%, var(--c-pink) 8% 100%);
+    color: #fff;
+    font-family: var(--f-board);
+    font-size: clamp(1.6rem, 6vmin, 4rem);
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .25);
+}
+
+.listening .vinyl {
+    width: clamp(8rem, 30vmin, 19rem);
+}
+
+/* ---- Barra dell'ascolto ---- */
+.listen-bar {
+    width: min(70vw, 44rem);
+    height: clamp(.5rem, 1.4vmin, .9rem);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, .1);
+    overflow: hidden;
+}
+
+.listen-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--c-cyan), var(--c-pink));
+    transition: width .5s linear;
+}
+
+.listen-caption {
+    color: var(--c-text);
+    font-size: clamp(1.1rem, 3.6vmin, 2.2rem);
+    font-weight: 700;
+    letter-spacing: .03em;
+}
+
+/* ---- Squadra prenotata ---- */
+.buzzed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(.4rem, 2vmin, 1.4rem);
+    text-align: center;
+    animation: slam .45s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+
+@keyframes slam {
+    from {
+        opacity: 0;
+        transform: scale(1.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.buzzed-label {
+    color: var(--c-text-dim);
+    font-size: clamp(1rem, 3vmin, 1.8rem);
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+}
+
+.buzzed-team {
+    padding: .1em .6em;
+    border-radius: var(--r-xl);
+    background: var(--team);
+    color: #0d0520;
+    font-family: var(--f-board);
+    font-size: clamp(3rem, 16vmin, 11rem);
+    line-height: 1.1;
+    box-shadow: 0 0 80px color-mix(in srgb, var(--team) 70%, transparent);
+    animation: glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    to {
+        box-shadow: 0 0 140px color-mix(in srgb, var(--team) 90%, transparent);
+        transform: scale(1.03);
+    }
+}
+
+.buzzed-sub {
+    color: var(--c-text);
+    font-size: clamp(1.4rem, 5vmin, 3rem);
+    font-weight: 800;
+}
+
+.answer-clock {
+    display: grid;
+    place-items: center;
+    width: clamp(5rem, 18vmin, 11rem);
+    aspect-ratio: 1;
+    border: clamp(4px, 1vmin, 8px) solid var(--team);
+    border-radius: 50%;
+    color: var(--c-text);
+    font-family: var(--f-board);
+    font-size: clamp(2.4rem, 9vmin, 6rem);
+}
+
+.answer-clock.over {
+    border-color: var(--c-red);
+    color: var(--c-red-soft);
+    font-size: clamp(1rem, 3.6vmin, 2.2rem);
+    animation: blink .5s ease-in-out infinite;
+}
+
+/* ---- Titolo svelato ---- */
+.revealed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.2rem, 5vmin, 4rem);
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+.reveal-text {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(.3rem, 1.4vmin, 1rem);
+    max-width: min(60vw, 52rem);
+    animation: rise .6s cubic-bezier(.2, .9, .3, 1.1) both;
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.reveal-title {
+    color: var(--c-yellow);
+    font-family: var(--f-board);
+    font-size: clamp(2rem, 8vmin, 5.6rem);
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+    text-shadow: 0 0 30px rgba(255, 210, 63, .45);
+}
+
+.reveal-artist {
+    color: var(--c-cyan-soft);
+    font-size: clamp(1.2rem, 4.4vmin, 2.8rem);
+    font-weight: 700;
+}
+
+.reveal-winner {
+    margin-top: var(--s-2);
+    color: var(--c-text-dim);
+    font-size: clamp(1rem, 3.2vmin, 2rem);
+    font-weight: 600;
+}
+
+.reveal-winner strong {
+    padding: 0 .3em;
+    border-radius: var(--r-sm);
+    background: var(--team);
+    color: #0d0520;
+}
+
+/* ---- Punteggi ---- */
+.scores {
+    display: flex;
+    justify-content: center;
+    gap: clamp(.4rem, 1.4vmin, 1rem);
+    flex-wrap: wrap;
+    padding-top: clamp(.5rem, 2vmin, 1.4rem);
+}
+
+.score {
+    display: flex;
+    align-items: center;
+    gap: clamp(.4rem, 1.4vmin, 1rem);
+    min-width: clamp(7rem, 16vw, 14rem);
+    padding: clamp(.35rem, 1.2vmin, .8rem) clamp(.7rem, 2vmin, 1.4rem);
+    border: 2px solid color-mix(in srgb, var(--team) 60%, transparent);
+    border-left-width: clamp(6px, 1.2vmin, 12px);
+    border-radius: var(--r-lg);
+    background: rgba(0, 0, 0, .35);
+    transition: transform .2s ease, opacity .2s ease;
+}
+
+.score-name {
+    flex: 1;
+    color: var(--c-text);
+    font-size: clamp(.9rem, 2.6vmin, 1.6rem);
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.score-value {
+    color: var(--team);
+    font-family: var(--f-board);
+    font-size: clamp(1.3rem, 4vmin, 2.6rem);
+    font-variant-numeric: tabular-nums;
+}
+
+.score.locked {
+    opacity: .35;
+}
+
+.score.locked .score-name {
+    text-decoration: line-through;
+}
+
+.score.buzzing,
+.score.winner {
+    background: color-mix(in srgb, var(--team) 25%, rgba(0, 0, 0, .4));
+    box-shadow: 0 0 30px color-mix(in srgb, var(--team) 60%, transparent);
+    transform: translateY(-4px);
+}

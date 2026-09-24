@@ -1,0 +1,18 @@
+METTI QUI LE TUE CANZONI
+========================
+
+Sarabanda fa indovinare i brani che metti in questa cartella.
+
+- Formati: mp3, m4a, aac, ogg, opus, wav, webm, flac.
+- Il nome del file dà la risposta:   Artista - Titolo.mp3
+  (es. "Lucio Dalla - Caruso.mp3"). I numeri di traccia in testa
+  ("01 - ", "07. ") vengono tolti da soli.
+- Ogni sottocartella diventa una playlist da scegliere in regia:
+      canzoni\Anni 80\...
+      canzoni\Cartoni animati\...
+- I file caricati dalla regia finiscono in canzoni\Caricate.
+
+Dopo aver aggiunto dei file, in regia premi "Rileggi la cartella":
+non serve riavviare.
+
+I brani musicali sono tuoi: questa cartella non viene pubblicata su GitHub.

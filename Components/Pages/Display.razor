@@ -1,0 +1,162 @@
+@page "/display"
+@layout BareLayout
+@implements IDisposable
+@inject GameService Game
+
+@*
+    Lo schermo che guardano tutti, di solito anche quello che suona la musica.
+    Il titolo compare solo quando la regia lo svela.
+*@
+
+<PageTitle>Schermo — Sarabanda</PageTitle>
+
+<PlayerHost Page="AudioOutput.Display" Name="Schermo" />
+
+<div class="display status-@Game.Status.ToString().ToLowerInvariant()"
+     style="@(BuzzedTeam is { } b ? $"--team:{b.Color}" : WinnerTeam is { } w ? $"--team:{w.Color}" : "")">
+
+    <header class="top">
+        <div class="brand">Sarabanda</div>
+
+        @if (Game.IsActive && Game.CurrentSong is { } info)
+        {
+            <div class="song-info">
+                <span class="song-number">Canzone n. @Game.SongNumber</span>
+                @if (Game.ShowPlaylist)
+                {
+                    <span class="song-playlist">@(info.Kind == SongKind.Melody ? "🎹" : "🎵") @info.Playlist</span>
+                }
+                @if (info.Kind == SongKind.Melody && Game.NoteLimit > 0)
+                {
+                    <span class="song-notes">@Game.NoteLimit note</span>
+                }
+            </div>
+        }
+    </header>
+
+    <main class="stage">
+        @switch (Game.Status)
+        {
+            case GameStatus.Idle:
+                <div class="idle">
+                    <Equalizer Bars="18" Height="min(26vh, 12rem)" />
+                    <div class="idle-title">Sarabanda</div>
+                    <div class="idle-sub">In attesa della prossima canzone…</div>
+                </div>
+                break;
+
+            case GameStatus.Ready:
+                <div class="ready">
+                    <div class="vinyl" aria-hidden="true"><span class="vinyl-label">?</span></div>
+                    <div class="ready-title">Canzone n. @Game.SongNumber</div>
+                    <div class="ready-sub">Pronti a prenotarvi?</div>
+                </div>
+                break;
+
+            case GameStatus.Listening:
+                <div class="listening">
+                    <div class="vinyl @(Game.IsPlaying ? "spinning" : "")" aria-hidden="true"><span class="vinyl-label">?</span></div>
+                    <Equalizer Bars="24" Height="min(18vh, 9rem)" Playing="Game.IsPlaying" />
+
+                    @if (Game.ListenFraction is { } fraction)
+                    {
+                        <div class="listen-bar" role="presentation">
+                            <div class="listen-fill" style="width:@((int)(fraction * 100))%"></div>
+                        </div>
+                    }
+
+                    <div class="listen-caption">
+                        @if (!Game.AnyoneCanBuzz)
+                        {
+                            <span>Nessuno può più prenotarsi</span>
+                        }
+                        else if (Game.IsPlaying)
+                        {
+                            <span>Chi la riconosce, prenoti!</span>
+                        }
+                        else if (Game.ListenOver)
+                        {
+                            <span>Ascolto finito: chi la sa, prenoti!</span>
+                        }
+                        else
+                        {
+                            <span>⏸ Musica in pausa</span>
+                        }
+                    </div>
+                </div>
+                break;
+
+            case GameStatus.Buzzed when BuzzedTeam is { } team:
+                <div class="buzzed" @key="@($"{Game.SongNumber}-{team.Index}")">
+                    <div class="buzzed-label">Ha prenotato</div>
+                    <div class="buzzed-team">@team.Name</div>
+                    @if (Game.AnswerRemaining is { } left)
+                    {
+                        <div class="answer-clock @(left == 0 ? "over" : "")">
+                            @if (left == 0)
+                            {
+                                <span>Tempo!</span>
+                            }
+                            else
+                            {
+                                <span>@left</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="buzzed-sub">risponde!</div>
+                    }
+                </div>
+                break;
+
+            case GameStatus.Revealed when Game.CurrentSong is { } song:
+                <div class="revealed">
+                    <div class="vinyl big @(Game.IsPlaying ? "spinning" : "")" aria-hidden="true">
+                        <span class="vinyl-label">♪</span>
+                    </div>
+                    <div class="reveal-text">
+                        <div class="reveal-title">@song.Title</div>
+                        @if (song.Artist.Length > 0)
+                        {
+                            <div class="reveal-artist">@song.Artist</div>
+                        }
+                        <div class="reveal-winner">
+                            @if (WinnerTeam is { } winner)
+                            {
+                                <span>🎉 Indovinata da <strong>@winner.Name</strong>@(Game.PointsCorrect > 0 ? $"  +{Game.PointsCorrect}" : "")</span>
+                            }
+                            else
+                            {
+                                <span>Nessuno l'ha indovinata</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                break;
+        }
+    </main>
+
+    <footer class="scores">
+        @foreach (var team in Game.Teams)
+        {
+            <div class="score @(Game.IsLocked(team.Index) && Game.IsActive && Game.Status != GameStatus.Revealed ? "locked" : "") @(Game.BuzzedTeam == team.Index ? "buzzing" : "") @(Game.Winner == team.Index && Game.Status == GameStatus.Revealed ? "winner" : "")"
+                 style="--team:@team.Color">
+                <span class="score-name">@team.Name</span>
+                <span class="score-value">@team.Score</span>
+            </div>
+        }
+    </footer>
+</div>
+
+@code {
+    private Team? BuzzedTeam => Game.BuzzedTeam is { } i && i < Game.Teams.Count ? Game.Teams[i] : null;
+
+    private Team? WinnerTeam => Game.Winner is { } i && i < Game.Teams.Count ? Game.Teams[i] : null;
+
+    protected override void OnInitialized() => Game.OnChange += OnGameChange;
+
+    private void OnGameChange() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Game.OnChange -= OnGameChange;
+}

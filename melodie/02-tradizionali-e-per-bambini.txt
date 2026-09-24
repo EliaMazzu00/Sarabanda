@@ -1,0 +1,12 @@
+# TEMA: Tradizionali e per bambini
+#
+# Una melodia per riga:   TITOLO | AUTORE | BPM | NOTE
+
+Fra Martino | Tradizionale | 120 | C4 D4 E4 C4 C4 D4 E4 C4 E4 F4 G4:2 E4 F4 G4:2 G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4 C4 G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4 C4 C4 G3 C4:2 C4 G3 C4:2
+Brilla brilla la stellina | Tradizionale | 110 | C4 C4 G4 G4 A4 A4 G4:2 F4 F4 E4 E4 D4 D4 C4:2 G4 G4 F4 F4 E4 E4 D4:2
+Nella vecchia fattoria | Tradizionale | 130 | G4 G4 G4 D4 E4 E4 D4:2 B4 B4 A4 A4 G4:3
+Bella ciao | Canto popolare | 120 | E4:0.5 A4:0.5 B4:0.5 C5:0.5 A4:2 R:0.5 E4:0.5 A4:0.5 B4:0.5 C5:0.5 A4:2 R:0.5 E4:0.5 A4:0.5 B4:0.5 C5:1 B4:0.5 A4:0.5 C5:1 B4:0.5 A4:0.5 E5:1 E5:1 E5:1
+When the Saints Go Marching In | Spiritual | 140 | C4 E4 F4 G4:4 C4 E4 F4 G4:4 C4 E4 F4 G4:2 E4:2 C4:2 E4:2 D4:4
+Oh! Susanna | Stephen Foster | 140 | C4:0.5 D4:0.5 E4 G4 G4:1.5 A4:0.5 G4 E4 C4:1.5 D4:0.5 E4 E4 D4 C4 D4:3
+La cucaracha | Tradizionale messicano | 160 | C4:0.5 C4:0.5 C4:0.5 F4:1.5 A4:1 R:0.5 C4:0.5 C4:0.5 C4:0.5 F4:1.5 A4:1 R:1 F4:0.5 F4:0.5 E4:0.5 E4:0.5 D4:0.5 D4:0.5 C4:2
+Greensleeves | Tradizionale inglese | 150 | A4 C5:2 D5 E5:1.5 F5:0.5 E5 D5:2 B4 G4:1.5 A4:0.5 B4 C5:2 A4 A4:1.5 G#4:0.5 A4 B4:2 G#4 E4:2

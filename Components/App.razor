@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0d0520" />
+    <meta name="description" content="Indovina la canzone: il gioco musicale da fare in casa, con la TV e i telefoni come pulsanti di prenotazione." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <base href="/" />
+    <ResourcePreloader />
+
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["Sarabanda.styles.css"]" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+    <ImportMap />
+    <title>Sarabanda</title>
+    <HeadOutlet @rendermode="@(new InteractiveServerRenderMode(prerender: false))" />
+</head>
+
+<body>
+    <Routes @rendermode="@(new InteractiveServerRenderMode(prerender: false))" />
+    <ReconnectModal />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script src="@Assets["player.js"]"></script>
+</body>
+
+</html>

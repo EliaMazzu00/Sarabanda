@@ -1,0 +1,24 @@
+# TEMA: Classica e lirica
+#
+# Una melodia per riga:   TITOLO | AUTORE | BPM | NOTE
+# Note separate da spazi: C4 D#4:0.5 SOL4:2 ...  (dopo i due punti la durata in
+# battiti, 1 se manca; R è una pausa). Nomi inglesi (C D E F G A B) o italiani
+# (DO RE MI FA SOL LA SI), # per il diesis e b per il bemolle.
+
+Inno alla gioia | Ludwig van Beethoven | 120 | E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 E4:1.5 D4:0.5 D4:2 E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 D4:1.5 C4:0.5 C4:2
+Per Elisa | Ludwig van Beethoven | 140 | E5:0.5 D#5:0.5 E5:0.5 D#5:0.5 E5:0.5 B4:0.5 D5:0.5 C5:0.5 A4:1 R:0.5 C4:0.5 E4:0.5 A4:0.5 B4:1 R:0.5 E4:0.5 G#4:0.5 B4:0.5 C5:1 R:0.5 E4:0.5 E5:0.5 D#5:0.5 E5:0.5 D#5:0.5 E5:0.5 B4:0.5 D5:0.5 C5:0.5 A4:1.5
+Quinta sinfonia | Ludwig van Beethoven | 108 | R:0.5 G4:0.5 G4:0.5 G4:0.5 D#4:3 R:0.5 F4:0.5 F4:0.5 F4:0.5 D4:3
+Piccola serenata notturna | Wolfgang Amadeus Mozart | 120 | G4:1 R:0.5 D4:0.5 G4:1 R:0.5 D4:0.5 G4:0.5 D4:0.5 G4:0.5 B4:0.5 D5:2 C5:1 R:0.5 A4:0.5 C5:1 R:0.5 A4:0.5 C5:0.5 A4:0.5 F#4:0.5 A4:0.5 D4:2
+Marcia turca | Wolfgang Amadeus Mozart | 120 | B4:0.25 A4:0.25 G#4:0.25 A4:0.25 C5:1 D5:0.25 C5:0.25 B4:0.25 C5:0.25 E5:1 F5:0.25 E5:0.25 D#5:0.25 E5:0.25 B5:0.25 A5:0.25 G#5:0.25 A5:0.25 B5:0.25 A5:0.25 G#5:0.25 A5:0.25 C6:2
+Sinfonia n. 40 | Wolfgang Amadeus Mozart | 160 | D#5:0.5 D5:0.5 D5:1 D#5:0.5 D5:0.5 D5:1 D#5:0.5 D5:0.5 D5:1 A#5:2 A#5:0.5 A5:0.5 G5:1 G5:0.5 F5:0.5 D#5:1 D#5:0.5 D5:0.5 C5:1 C5:2
+La donna è mobile | Giuseppe Verdi | 220 | E4 E4 E4 G4:1.5 F4:0.5 D4:3 D4 D4 D4 F4:1.5 E4:0.5 C4:3
+Habanera | Georges Bizet | 72 | D5:1.5 C#5:0.5 C5:1 C5:0.5 B4:0.5 A#4:1.5 A4:0.5 G#4:1 G4:0.5 F4:0.5 E4:2
+Nell'antro del re della montagna | Edvard Grieg | 120 | B3:0.5 C#4:0.5 D4:0.5 E4:0.5 F#4:0.5 D4:0.5 F#4:1 F4:0.5 C#4:0.5 F4:1 E4:0.5 C4:0.5 E4:1 B3:0.5 C#4:0.5 D4:0.5 E4:0.5 F#4:0.5 D4:0.5 F#4:0.5 B4:0.5 A4:0.5 F#4:0.5 D4:0.5 F#4:0.5 A4:2
+Il mattino | Edvard Grieg | 150 | G4 E4 D4 C4 D4 E4 G4 E4 D4 C4 D4:0.5 E4:0.5 D4:0.5 E4:0.5 G4 E4 G4 A4 E4 A4 G4 E4 D4 C4:3
+Sul bel Danubio blu | Johann Strauss | 170 | D4 D4 F#4 A4 A4:2 R A5 A5:2 R F#5 F#5:2 R D4 D4 F#4 A4 A4:2 R A5 A5:2 R G5 G5:2
+La primavera | Antonio Vivaldi | 100 | E4 G#4 G#4 G#4 F#4:0.5 E4:0.5 B4:2.5 R:0.5 B4:0.5 A4:0.5 G#4 G#4 G#4 F#4:0.5 E4:0.5 B4:2.5
+Can can | Jacques Offenbach | 150 | C4 D4:0.5 F4:0.5 E4:0.5 D4:0.5 G4 G4 G4:0.5 A4:0.5 E4:0.5 F4:0.5 D4 D4 D4:0.5 F4:0.5 E4:0.5 D4:0.5 C4:0.5 C5:0.5 B4:0.5 A4:0.5 G4:0.5 F4:0.5 E4:0.5 D4:0.5 C4:2
+Guglielmo Tell | Gioachino Rossini | 150 | G4:0.25 G4:0.25 G4:0.5 G4:0.25 G4:0.25 G4:0.5 G4:0.25 G4:0.25 C5:0.5 D5:0.5 E5:0.5 R:0.5 G4:0.25 G4:0.25 G4:0.5 G4:0.25 G4:0.25 G4:0.5 G4:0.25 G4:0.25 C5:0.5 E5:0.5 D5:1
+Toccata e fuga in re minore | Johann Sebastian Bach | 60 | A5:0.25 G5:0.25 A5:2.5 R:0.5 G5:0.25 F5:0.25 E5:0.25 D5:0.25 C#5:1 D5:2
+Marcia nuziale | Richard Wagner | 80 | C4 F4:0.75 F4:0.25 F4:2 C4 G4:0.75 E4:0.25 F4:2 C4 F4:0.75 A#4:0.25 A#4:1.5 A4:0.5 G4:0.75 F4:0.25 E4:0.75 F4:0.25 G4:2
+Ninna nanna | Johannes Brahms | 90 | E4:0.5 E4:0.5 G4:2 E4:0.5 E4:0.5 G4:2 E4:0.5 G4:0.5 C5 B4:1.5 A4:0.5 A4 G4 D4:0.5 E4:0.5 F4 D4 D4:0.5 E4:0.5 F4:2 D4:0.5 F4:0.5 B4:0.5 A4:0.5 G4 B4 C5:2

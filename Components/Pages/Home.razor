@@ -1,0 +1,88 @@
+@page "/"
+@layout BareLayout
+@inject IConfiguration Config
+
+<PageTitle>Sarabanda</PageTitle>
+
+<div class="landing">
+
+    <header class="hero">
+        <Equalizer Bars="12" Height="4.5rem" />
+        <h1>Sarabanda</h1>
+        <p class="tagline">Indovina la canzone</p>
+    </header>
+
+    <nav class="cards" aria-label="Schermate del gioco">
+        <a class="card card-admin" href="/admin">
+            <span class="card-icon" aria-hidden="true">🎛️</span>
+            <span class="card-title">Regia</span>
+            <span class="card-desc">Sceglie le canzoni, le fa suonare, giudica le risposte</span>
+            <span class="card-hint">da aprire sul PC che conduce</span>
+        </a>
+
+        <a class="card card-display" href="/display">
+            <span class="card-icon" aria-hidden="true">📺</span>
+            <span class="card-title">Schermo</span>
+            <span class="card-desc">La musica, chi si è prenotato, il titolo e i punteggi</span>
+            <span class="card-hint">TV o proiettore, con le casse</span>
+        </a>
+
+        <a class="card card-remote" href="/remote">
+            <span class="card-icon" aria-hidden="true">🔴</span>
+            <span class="card-title">Pulsante</span>
+            <span class="card-desc">Il pulsante di prenotazione di ogni squadra</span>
+            <span class="card-hint">sul telefono di ciascuna squadra</span>
+        </a>
+    </nav>
+
+    <section class="rules" aria-label="Come si gioca">
+        <h2>Come si gioca</h2>
+        <ol>
+            <li>Parte una canzone (o una melodia al pianoforte).</li>
+            <li>Chi la riconosce <strong>preme il pulsante</strong> sul telefono: la musica si ferma e quella squadra risponde.</li>
+            <li>Titolo giusto: <strong>punti</strong> e si svela la canzone. Sbagliato: la squadra resta fuori e la musica riparte per gli altri.</li>
+        </ol>
+    </section>
+
+    <section class="lan" aria-label="Come collegare gli altri dispositivi">
+        <h2>Per gli altri schermi, sulla stessa rete</h2>
+
+        @if (addresses.Count > 0)
+        {
+            <ul class="lan-list">
+                @foreach (var address in addresses)
+                {
+                    <li><code>http://@address:@port/display</code></li>
+                }
+            </ul>
+            <p class="lan-note">
+                Apri uno di questi indirizzi dalla TV. Sui telefoni delle squadre usa
+                <code>/remote</code> al posto di <code>/display</code>.
+            </p>
+        }
+        else
+        {
+            <p class="lan-note">
+                Usa l'indirizzo IP di questo PC seguito da
+                <code>:@port/display</code>.
+            </p>
+        }
+
+        <p class="lan-note firewall">
+            Alla prima esecuzione Windows può chiedere di autorizzare l'app nel firewall:
+            consenti l'accesso alle <strong>reti private</strong>, altrimenti gli altri
+            dispositivi non riescono a collegarsi.
+        </p>
+    </section>
+</div>
+
+@code {
+    private IReadOnlyList<string> addresses = Array.Empty<string>();
+    private int port;
+
+    protected override void OnInitialized()
+    {
+        port = Config.GetValue("Server:Port", 5110);
+        addresses = NetworkInfo.GetLanAddresses();
+    }
+}

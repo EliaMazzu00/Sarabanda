@@ -1,0 +1,194 @@
+@page "/remote"
+@layout BareLayout
+@implements IDisposable
+@inject GameService Game
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@*
+    Il pulsante di prenotazione di una squadra. Si sceglie la squadra una volta
+    (resta nell'indirizzo: /remote?squadra=2), poi c'è solo il pulsante.
+*@
+
+<PageTitle>@(MyTeam is { } t ? $"{t.Name} — Sarabanda" : "Pulsante — Sarabanda")</PageTitle>
+
+@if (MyTeam is not { } team)
+{
+    <div class="remote choose">
+        <h1>Di che squadra sei?</h1>
+        <p class="choose-sub">Tocca il nome della tua squadra: da qui in poi questo telefono è il vostro pulsante.</p>
+        <div class="team-list">
+            @foreach (var option in Game.Teams)
+            {
+                <button class="team-option" style="--team:@option.Color" @onclick="() => ChooseTeam(option.Number)">
+                    <span class="team-dot"></span>
+                    <span>@option.Name</span>
+                </button>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="remote" style="--team:@team.Color">
+        <header class="head">
+            <span class="head-team"><span class="team-dot"></span>@team.Name</span>
+            <span class="head-score">@team.Score @(team.Score == 1 ? "punto" : "punti")</span>
+        </header>
+
+        <div class="middle">
+            @switch (ButtonState)
+            {
+                case State.Armed:
+                    <button class="buzzer armed" @onpointerdown="Press" @onpointerdown:preventDefault
+                            @onkeydown="OnKey" aria-label="Prenota">
+                        <span class="buzzer-text">PRENOTA</span>
+                    </button>
+                    <p class="hint">Premi appena riconosci la canzone!</p>
+                    break;
+
+                case State.Mine:
+                    <div class="buzzer mine"><span class="buzzer-text">TOCCA<br />A VOI</span></div>
+                    <p class="hint strong">Dite il titolo ad alta voce!</p>
+                    break;
+
+                case State.Other:
+                    <div class="buzzer off" style="--other:@(OtherTeam?.Color)"><span class="buzzer-text small">@OtherTeam?.Name<br />ha prenotato</span></div>
+                    <p class="hint">Se sbaglia, tocca di nuovo a voi.</p>
+                    break;
+
+                case State.Locked:
+                    <div class="buzzer off"><span class="buzzer-text small">Siete fuori<br />per questa canzone</span></div>
+                    <p class="hint">Avete già sbagliato: aspettate la prossima.</p>
+                    break;
+
+                case State.Ready:
+                    <div class="buzzer off"><span class="buzzer-text small">Pronti…</span></div>
+                    <p class="hint">La canzone sta per partire.</p>
+                    break;
+
+                case State.Revealed:
+                    <div class="reveal">
+                        <div class="reveal-label">Era</div>
+                        <div class="reveal-title">@Game.CurrentSong?.Title</div>
+                        @if (Game.CurrentSong is { Artist.Length: > 0 } song)
+                        {
+                            <div class="reveal-artist">@song.Artist</div>
+                        }
+                        <div class="reveal-winner">
+                            @(Game.Winner == team.Index ? "🎉 L'avete indovinata!" : Game.Winner is { } w ? $"L'ha indovinata {Game.Teams[w].Name}" : "Nessuno l'ha indovinata")
+                        </div>
+                    </div>
+                    break;
+
+                default:
+                    <div class="waiting">
+                        <Equalizer Bars="7" Height="3.5rem" Playing="false" />
+                        <p class="hint">In attesa della prossima canzone…</p>
+                    </div>
+                    break;
+            }
+
+            @if (message is not null)
+            {
+                <p class="flash">@message</p>
+            }
+        </div>
+
+        <footer class="foot">
+            <button class="change" @onclick="ForgetTeam">Cambia squadra</button>
+        </footer>
+    </div>
+}
+
+@code {
+    [SupplyParameterFromQuery(Name = "squadra")]
+    public int? TeamNumber { get; set; }
+
+    private string? message;
+    private int lastSongNumber;
+
+    private enum State { Waiting, Ready, Armed, Mine, Other, Locked, Revealed }
+
+    private Team? MyTeam => TeamNumber is { } n && n >= 1 && n <= Game.Teams.Count ? Game.Teams[n - 1] : null;
+
+    private Team? OtherTeam => Game.BuzzedTeam is { } b && b < Game.Teams.Count ? Game.Teams[b] : null;
+
+    private State ButtonState
+    {
+        get
+        {
+            if (MyTeam is not { } team)
+                return State.Waiting;
+
+            return Game.Status switch
+            {
+                GameStatus.Ready => State.Ready,
+                GameStatus.Listening when Game.IsLocked(team.Index) => State.Locked,
+                GameStatus.Listening => State.Armed,
+                GameStatus.Buzzed when Game.BuzzedTeam == team.Index => State.Mine,
+                GameStatus.Buzzed => Game.IsLocked(team.Index) ? State.Locked : State.Other,
+                GameStatus.Revealed => State.Revealed,
+                _ => State.Waiting
+            };
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        lastSongNumber = Game.SongNumber;
+        Game.OnChange += OnGameChange;
+    }
+
+    private void ChooseTeam(int number) =>
+        Navigation.NavigateTo(Navigation.GetUriWithQueryParameter("squadra", number));
+
+    private void ForgetTeam() =>
+        Navigation.NavigateTo(Navigation.GetUriWithQueryParameter("squadra", (int?)null));
+
+    private async Task Press()
+    {
+        if (MyTeam is not { } team)
+            return;
+
+        var result = Game.Buzz(team.Index);
+
+        message = result switch
+        {
+            GameService.BuzzResult.TooLate => "Troppo tardi: qualcuno è stato più veloce!",
+            GameService.BuzzResult.Locked => "Siete fuori per questa canzone.",
+            GameService.BuzzResult.Closed => "Adesso non si può prenotare.",
+            _ => null
+        };
+
+        if (result == GameService.BuzzResult.Accepted)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("sarabanda.vibrate", 200);
+            }
+            catch (JSException)
+            {
+                // Vibrazione non disponibile: pazienza.
+            }
+        }
+    }
+
+    private async Task OnKey(KeyboardEventArgs e)
+    {
+        if (e.Key is " " or "Enter")
+            await Press();
+    }
+
+    private void OnGameChange() => InvokeAsync(() =>
+    {
+        // Con una nuova canzone l'avviso di prima non serve più.
+        if (Game.SongNumber != lastSongNumber || Game.Status != GameStatus.Listening)
+            message = null;
+
+        lastSongNumber = Game.SongNumber;
+        StateHasChanged();
+    });
+
+    public void Dispose() => Game.OnChange -= OnGameChange;
+}

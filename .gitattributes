@@ -1,0 +1,30 @@
+# Normalizza i fine-riga: in repo sempre LF, in locale quelli della piattaforma.
+* text=auto
+
+# Sorgenti e testi: sempre LF in repo.
+*.cs        text diff=csharp eol=lf
+*.razor     text eol=lf
+*.css       text eol=lf
+*.js        text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.txt       text eol=lf
+*.csproj    text eol=lf
+*.pubxml    text eol=lf
+*.yml       text eol=lf
+.gitignore  text eol=lf
+
+# File che su Windows devono restare CRLF.
+*.ps1       text eol=crlf
+*.cmd       text eol=crlf
+*.bat       text eol=crlf
+
+# Binari: mai convertiti.
+*.png       binary
+*.jpg       binary
+*.ico       binary
+*.zip       binary
+*.dll       binary
+*.exe       binary
+*.mp3       binary
+*.svg       text eol=lf

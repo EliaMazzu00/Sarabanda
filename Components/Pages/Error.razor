@@ -1,0 +1,30 @@
+@page "/Error"
+@layout MainLayout
+@using System.Diagnostics
+
+<PageTitle>Errore — Sarabanda</PageTitle>
+
+<div class="page-simple">
+    <h1>Qualcosa è andato storto</h1>
+    <p>
+        Si è verificato un errore durante l'elaborazione della richiesta.
+        Ricarica la pagina: la partita in corso non viene persa, perché vive nel server.
+    </p>
+    @if (ShowRequestId)
+    {
+        <p>Codice della richiesta: <code>@RequestId</code></p>
+    }
+    <a class="back-link" href="/">Torna al menu</a>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}
